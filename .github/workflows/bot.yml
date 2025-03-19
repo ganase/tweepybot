@@ -2,7 +2,7 @@ name: Run Tweepy Bot
 
 on:
   schedule:
-    - cron:10 11 * * *
+    - cron:110 11 * *
 
 jobs:
   run-bot:
