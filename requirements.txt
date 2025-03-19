@@ -5,5 +5,4 @@ datetime
 logging
 datetime
 selenium
-time
 pytz
