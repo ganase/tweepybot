@@ -2,9 +2,9 @@ name: Run Tweepy Bot
 
 on:
   schedule:
+    - cron: '10 4 * * *'  # 毎日12:00 (JST) に実行 (UTC 03:00)
+  workflow_dispatch:
 
-    - cron: '00 4 * * *'  # ???? 12:10 (JST) ??? (UTC 03:wo10)
-      workflow_dispatch:
 jobs:
   run-bot:
     runs-on: ubuntu-latest
@@ -24,4 +24,4 @@ jobs:
 
     - name: Run Tweepy Bot
       run: |
-        python your_bot_script.py  # ????????????
+        python your_bot_script.py  # あなたのスクリプト名に置き換えてください
