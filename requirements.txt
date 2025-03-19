@@ -2,7 +2,7 @@ gspread
 oauth2client
 tweepy
 datetime
-json
+
 logging
 csv
 datetime
