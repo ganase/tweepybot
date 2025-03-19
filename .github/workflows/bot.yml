@@ -1,8 +1,8 @@
 name: Run Tweepy Bot
 
 on:
-#  schedule:
-  - cron: 40 * * * ** * * * 
+  schedule:
+    - cron: '10 3 * * *'  # 日本時間 12:10 (JST) に実行 (UTC 03:10)
 
 jobs:
   run-bot:
@@ -23,5 +23,4 @@ jobs:
 
     - name: Run Tweepy Bot
       run: |
-        python your_bot_script.py  # ここをbotのスクリプト名に置き換えてください
-
+        python your_bot_script.py  # スクリプト名を適切に変更
