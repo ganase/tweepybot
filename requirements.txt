@@ -6,3 +6,5 @@ logging
 datetime
 selenium
 pytz
+gspread
+oauth2client
