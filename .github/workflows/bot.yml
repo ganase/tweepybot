@@ -2,6 +2,7 @@ name: Run Tweepy Bot
 
 on:
   schedule:
+    workflow_dispatch:
     - cron: '20 3 * * *'  # 日本時間 12:10 (JST) に実行 (UTC 03:10)
 
 jobs:
