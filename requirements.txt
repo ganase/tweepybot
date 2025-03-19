@@ -8,3 +8,4 @@ selenium
 pytz
 gspread
 oauth2client
+tweepy
