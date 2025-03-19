@@ -2,7 +2,7 @@ name: Run Tweepy Bot
 
 on:
   schedule:
-    - cron: '10 4 * * *'  # 毎日12:00 (JST) に実行 (UTC 03:00)
+    - cron: '10 4 * * *'  # 毎日12:10 (JST) に実行 (UTC 03:10)
   workflow_dispatch:
 
 jobs:
@@ -22,6 +22,9 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
 
+    - name: Set up Service Account
+      run: echo "${{ secrets.SERVICE_ACCOUNT_JSON }}" > service_account.json
+
     - name: Run Tweepy Bot
       run: |
-        python tweepybot_scraping_tuge.py # あなたのスクリプト名に置き換えてください
+        python tweepybot_scraping_tuge.py  # あなたのスクリプト名に置き換えてください
