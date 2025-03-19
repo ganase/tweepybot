@@ -2,7 +2,7 @@ name: Run Tweepy Bot
 
 on:
   schedule:
-  - cr40 '30 11 * * *'
+  - cr4040 11 * * *'
 
 jobs:
   run-bot:
