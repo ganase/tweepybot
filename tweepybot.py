@@ -1,12 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[6]:
-
-
-get_ipython().system('pip install -U tweepy')
-
-
 # In[5]:
 
 
@@ -137,10 +131,4 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
-# In[ ]:
-
-
-
 

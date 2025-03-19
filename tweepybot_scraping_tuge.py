@@ -91,12 +91,6 @@ except IOError:
 print(f"CSV file '{csv_file}' has been created.")
 
 
-# In[13]:
-
-
-pip install gspread oauth2client pandas
-
-
 # ## Google sheets にスクレイピング結果を書き込み
 
 # In[13]:
@@ -133,10 +127,4 @@ if new_rows:
     sheet.append_rows(new_rows)
 
 print("Google Sheetsに新しい行が追加されました。")
-
-
-# In[ ]:
-
-
-
 
