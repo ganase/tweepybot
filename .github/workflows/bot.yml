@@ -2,8 +2,7 @@ name: Run Tweepy Bot
 
 on:
   schedule:
-    - cron: '35 3 * * *'  # ???? 12:10 (JST) ??? (UTC 03:
-      workflow_dispatch:10)
+    - cron: '45 3 * * *'  # ???? 12:10 (JST) ??? (UTC 03:workflow_dispatch:10)
 
 jobs:
   run-bot:
