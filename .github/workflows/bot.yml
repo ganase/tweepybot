@@ -24,4 +24,4 @@ jobs:
 
     - name: Run Tweepy Bot
       run: |
-        python your_bot_tweetweepybot.py# あなたのスクリプト名に置き換えてください
+        python tweepybot_scraping_tuge.py # あなたのスクリプト名に置き換えてください
