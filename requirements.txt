@@ -3,7 +3,6 @@ oauth2client
 tweepy
 datetime
 logging
-csv
 datetime
 selenium
 time
