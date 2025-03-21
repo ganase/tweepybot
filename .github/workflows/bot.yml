@@ -22,7 +22,7 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
 
-    - name: Set up Service Accountrun: | 
+    - name: Set up Service Accountrun: |  
   echo "{
     \"type\": \"$SERVICE_ACCOUNT_TYPE\",
     \"project_id\": \"$SERVICE_ACCOUNT_PROJECT_ID\",
