@@ -24,7 +24,7 @@ jobs:
 
     - name: Set up Service Accountrun:|  
                           echo "{
-    \"type\": \"$SERVICE_ACCOUNT_TYP
+    \"type\": \"$SERVICE_ACCOUNT_TY
     \"project_id\": \"$SERVICE_ACCOUNT_PROJECT_ID\",
     \"private_key_id\": \"$SERVICE_ACCOUNT_PRIVATE_KEY_ID\",
     \"private_key\": \"$SERVICE_ACCOUNT_PRIVATE_KEY\",
