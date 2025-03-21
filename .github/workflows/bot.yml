@@ -23,7 +23,7 @@ jobs:
         pip install -r requirements.txt
 
     - name: Set up Service Accountrun: |  
-                    echo "{
+                      echo "{
     \"type\": \"$SERVICE_ACCOUNT_TYPE\",
     \"project_id\": \"$SERVICE_ACCOUNT_PROJECT_ID\",
     \"private_key_id\": \"$SERVICE_ACCOUNT_PRIVATE_KEY_ID\",
