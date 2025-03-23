@@ -23,14 +23,18 @@ jobs:
         pip install -r requirements.txt
 
     - name: Set up Service Accountrun:|  
-                          echo 
-    \"type\": \"$SERVICE_ACCOUNT_TY
-    \"project_id\": \"$SERVICE_ACCOUNT_PROJECT_ID\",
-    \"private_key_id\": \"$SERVICE_ACCOUNT_PRIVATE_KEY_ID\",
-    \"private_key\": \"$SERVICE_ACCOUNT_PRIVATE_KEY\",
-    \"client_email\": \"$SERVICE_ACCOUNT_CLIENT_EMAIL\",
-    \"client_id\": \"$SERVICE_ACCOUNT_CLIENT_ID\",
-    \"auth_uri\": \"$SERVICE_ACCOUNT_AUTH_URI\",
+   echo -e "{
+  \"type\": \"${{ secrets.SERVICE_ACCOUNT_TYPE }}\",
+  \"project_id\": \"${{ secrets.SERVICE_ACCOUNT_PROJECT_ID }}\",
+  \"private_key_id\": \"${{ secrets.SERVICE_ACCOUNT_PRIVATE_KEY_ID }}\",
+  \"private_key\": \"${{ secrets.SERVICE_ACCOUNT_PRIVATE_KEY }}\",
+  \"client_email\": \"${{ secrets.SERVICE_ACCOUNT_CLIENT_EMAIL }}\",
+  \"client_id\": \"${{ secrets.SERVICE_ACCOUNT_CLIENT_ID }}\",
+  \"auth_uri\": \"${{ secrets.SERVICE_ACCOUNT_AUTH_URI }}\",
+  \"token_uri\": \"${{ secrets.SERVICE_ACCOUNT_TOKEN_URI }}\",
+  \"auth_provider_x509_cert_url\": \"${{ secrets.SERVICE_ACCOUNT_AUTH_PROVIDER_CERT_URL }}\",
+  \"client_x509_cert_url\": \"${{ secrets.SERVICE_ACCOUNT_CLIENT_CERT_URL }}\"
+}" > service_account.jsonURI\",
     \"token_uri\": \"$SERVICE_ACCOUNT_TOKEN_URI\",
     \"auth_provider_x509_cert_url\": \"$SERVICE_ACCOUNT_AUTH_PROVIDER_CERT_URL\",
     \"client_x509_cert_url\": \"$SERVICE_ACCOUNT_CLIENT_CERT_URL\",
