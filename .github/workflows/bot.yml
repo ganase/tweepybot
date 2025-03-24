@@ -1,31 +1,40 @@
+name: Tweepy Bot Workflow
 
-                      SERVICE_ACCOUNT_CLIENT_ID: ${{ secrets.SERVICE_ACCOUNT_CLIENT_ID }}
-                          SERVICE_ACCOUNT_CLIENT_EMAIL: ${{ secrets.SERVICE_ACCOUNT_CLIENT_EMAIL }}
-                        SERVICE_ACCOUNT_PRIVATE_KEY: ${{ secrets.SERVICE_ACCOUNT_PRIVATE_KEY }}
-                      SERVICE_ACCOUNT_PRIVATE_KEY_ID: ${{ secrets.SERVICE_ACCOUNT_PRIVATE_KEY_ID }}
-          SERVICE_ACCOUNT_PROJECT_ID: ${{ secrets.nSERVICE_ACCOUNT_PROJECT_ID }}
-           SERVICE_ACCOUNT_TYPE: ${{ secrets.SERVICE_ACCOUNT_TYPE }}
-              - cron: "0 6 * * *"  # Adjust the cron schedule as needed         env:
-        :
-        RVICE_ACCOUNT_CLIENT_X509_CERT_URL: ${{ secrets.SERVICE_ACCOUNT_CLIENT_X509_CERT_URL }}
-      runs-on: ubuntu-latest
+on:
+  # スケジュール実行したい場合
+  schedule:
+    - cron: "0 6 * * *"  # 毎日6時に実行
 
-                               SERVICE_ACCOUNT_AUTH_URI: ${{ secrets.SERVICE_ACCOUNT_AUTH_URI }}
-      
+  # 手動トリガーで走らせたい場合 (任意で追加)
+  workflow_dispatch:
+
+jobs:
+  run-tweepy-bot:
+    runs-on: ubuntu-latest
+
+    env:
+      SERVICE_ACCOUNT_CLIENT_ID: ${{ secrets.SERVICE_ACCOUNT_CLIENT_ID }}
+      SERVICE_ACCOUNT_CLIENT_EMAIL: ${{ secrets.SERVICE_ACCOUNT_CLIENT_EMAIL }}
+      SERVICE_ACCOUNT_PRIVATE_KEY: ${{ secrets.SERVICE_ACCOUNT_PRIVATE_KEY }}
+      SERVICE_ACCOUNT_PRIVATE_KEY_ID: ${{ secrets.SERVICE_ACCOUNT_PRIVATE_KEY_ID }}
+      SERVICE_ACCOUNT_PROJECT_ID: ${{ secrets.SERVICE_ACCOUNT_PROJECT_ID }}
+      SERVICE_ACCOUNT_TYPE: ${{ secrets.SERVICE_ACCOUNT_TYPE }}
+      SERVICE_ACCOUNT_CLIENT_X509_CERT_URL: ${{ secrets.SERVICE_ACCOUNT_CLIENT_X509_CERT_URL }}
+      SERVICE_ACCOUNT_AUTH_URI: ${{ secrets.SERVICE_ACCOUNT_AUTH_URI }}
+
     steps:
-    - uses: actions/checkout@v2
+      - uses: actions/checkout@v2
 
-    - name: Set up Python
-      uses: actions/setup-python@v2
-      with:
-        python-version: '3.x'
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
 
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
 
-
-    - name: Run Tweepy Bot
-      run: |
-        python tweepybot_scraping_tuge.py  # あなたのスクリプト名に置き換えてください
+      - name: Run Tweepy Bot
+        run: |
+          python tweepybot_scraping_tuge.py  # 実行したいPythonスクリプト
