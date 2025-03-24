@@ -1,4 +1,6 @@
-name: Run Tweepy Bot     毎日12:10 (JST) に実行 (UTC 03:10)     workflow_dispatch:
+name: Run Tweepy Bot     毎日12:10 (JST) に実行 (UTC 03:10)     workfl
+
+ow_dispatch:
  bjobs:                :    
   run-bot:
     runs-on: ubuntu-latest
