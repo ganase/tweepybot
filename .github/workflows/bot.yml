@@ -40,3 +40,6 @@ jobs:
       - name: Run Tweepy Bot
         run: |
           python tweepybot_scraping_tuge.py  # 実行したいPythonスクリプト
+    - name: Run Tweepy Bot
+      run: |
+        python tweepybot.py  # 別のプログラム
