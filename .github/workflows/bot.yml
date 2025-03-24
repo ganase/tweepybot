@@ -1,6 +1,6 @@
 name: Run Tweepy Bot     毎日12:10 (JST) に実行 (UTC 03:10)     workfl
 
-ow_dispatch:
+on:
 bjobs:                :    
   run-bot:
           env:
