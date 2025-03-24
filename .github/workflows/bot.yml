@@ -2,7 +2,7 @@
   scedule:
        - cron: "0 6 * * *"  # Adjust the cron schedule as needed         env:
       SERVICE_ACCOUNT_TYPE: ${{ secrets.SERVICE_ACCOUNT_TYPE }}
-      SERVICE_ACCOUNT_PROJECT_ID: ${{ secrets.nSERVICE_ACCOUNT_PROJECT_ID }}
+     SERVICE_ACCOUNT_PROJECT_ID: ${{ secrets.nSERVICE_ACCOUNT_PROJECT_ID }}
       SERVICE_ACCOUNT_PRIVATE_KEY_ID: ${{ secrets.SERVICE_ACCOUNT_PRIVATE_KEY_ID }}
       SERVICE_ACCOUNT_PRIVATE_KEY: ${{ secrets.SERVICE_ACCOUNT_PRIVATE_KEY }}
       SERVICE_ACCOUNT_CLIENT_EMAIL: ${{ secrets.SERVICE_ACCOUNT_CLIENT_EMAIL }}
