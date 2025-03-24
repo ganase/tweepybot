@@ -3,6 +3,17 @@ name: Run Tweepy Bot     毎日12:10 (JST) に実行 (UTC 03:10)     workfl
 ow_dispatch:
 bjobs:                :    
   run-bot:
+          env:
+      SERVICE_ACCOUNT_TYPE: ${{ secrets.SERVICE_ACCOUNT_TYPE }}
+      SERVICE_ACCOUNT_PROJECT_ID: ${{ secrets.SERVICE_ACCOUNT_PROJECT_ID }}
+      SERVICE_ACCOUNT_PRIVATE_KEY_ID: ${{ secrets.SERVICE_ACCOUNT_PRIVATE_KEY_ID }}
+      SERVICE_ACCOUNT_PRIVATE_KEY: ${{ secrets.SERVICE_ACCOUNT_PRIVATE_KEY }}
+      SERVICE_ACCOUNT_CLIENT_EMAIL: ${{ secrets.SERVICE_ACCOUNT_CLIENT_EMAIL }}
+      SERVICE_ACCOUNT_CLIENT_ID: ${{ secrets.SERVICE_ACCOUNT_CLIENT_ID }}
+      SERVICE_ACCOUNT_AUTH_URI: ${{ secrets.SERVICE_ACCOUNT_AUTH_URI }}
+      SERVICE_ACCOUNT_TOKEN_URI: ${{ secrets.SERVICE_ACCOUNT_TOKEN_URI }}
+      SERVICE_ACCOUNT_AUTH_PROVIDER_CERT_URL: ${{ secrets.SERVICE_ACCOUNT_AUTH_PROVIDER_CERT_URL }}
+      SERVICE_ACCOUNT_CLIENT_X509_CERT_URL: ${{ secrets.SERVICE_ACCOUNT_CLIENT_X509_CERT_URL }}
     runs-on: ubuntu-latest
 
     steps:
@@ -18,27 +29,6 @@ bjobs:                :
         python -m pip install --upgrade pip
         pip install -r requirements.txt
 
-    - name: Set up Service Accountrun:|  
-   echo "{
-  \"type\": \"${{ secrets.SERVICE_ACCOUNT_TYPE }}\",
-  \"project_id\": \"${{ secrets.SERVICE_ACCOUNT_PROJECT_ID }}\",
-  \"private_key_id\": \"${{ secrets.SERVICE_ACCOUNT_PRIVATE_KEY_ID }}\",
-  \"private_key\": \"${{ secrets.SERVICE_ACCOUNT_PRIVATE_KEY }}\",
-  \"client_email\": \"${{ secrets.SERVICE_ACCOUNT_CLIENT_EMAIL }}\",
-  \"client_id\": \"${{ secrets.SERVICE_ACCOUNT_CLIENT_ID }}\",
-  \"auth_uri\": \"${{ secrets.SERVICE_ACCOUNT_AUTH_URI }}\",
-  \"token_uri\": \"${{ secrets.SERVICE_ACCOUNT_TOKEN_URI }}\",
-  \"auth_provider_x509_cert_url\": \"${{ secrets.SERVICE_ACCOUNT_AUTH_PROVIDER_CERT_URL }}\",
-  \"client_x509_cert_url\": \"${{ secrets.SERVICE_ACCOUNT_CLIENT_CERT_URL }}\"
-}" > service_account.json,
-  \"auth_provider_x509_cert_url\": \"${{ secrets.SERVICE_ACCOUNT_AUTH_PROVIDER_CERT_URL }}\",
-  \"client_x509_cert_url\": \"${{ secrets.SERVICE_ACCOUNT_CLIENT_CERT_URL }}\"
-}" > service_account.jsonURI\",
-    \"token_uri\": \"$SERVICE_ACCOUNT_TOKEN_URI\",
-    \"auth_provider_x509_cert_url\": \"$SERVICE_ACCOUNT_AUTH_PROVIDER_CERT_URL\",
-    \"client_x509_cert_url\": \"$SERVICE_ACCOUNT_CLIENT_CERT_URL\",
-    \"universe_domain\": \"$SERVICE_ACCOUNT_UNIVERSE_DOMAIN\"
-  }" > service_account.json" > service_account.json
 
     - name: Run Tweepy Bot
       run: |
