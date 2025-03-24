@@ -1,5 +1,5 @@
-name: Run Tweepy Bot     毎日12:10 (JST) に実行 (UTC 03:10)     workflonbjobson:                :   on:  run-bot:
-          env:
+ame: Run Tweepy Bot     毎日12:10 (JST) に実行 (UTC 03:10)     workflonbjobson:                :   on:  run-bot:
+n          env:
       SERVICE_ACCOUNT_TYPE: ${{ secrets.SERVICE_ACCOUNT_TYPE }}
       SERVICE_ACCOUNT_PROJECT_ID: ${{ secrets.SERVICE_ACCOUNT_PROJECT_ID }}
       SERVICE_ACCOUNT_PRIVATE_KEY_ID: ${{ secrets.SERVICE_ACCOUNT_PRIVATE_KEY_ID }}
