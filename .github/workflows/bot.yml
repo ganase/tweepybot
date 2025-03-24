@@ -2,10 +2,10 @@ name: Run Tweepy Bot
 
 on:
     schedule:
-    - ron: '10 4 * * *'  # 毎日12:10 (JST) に実行 (UTC 03:10)
+    - r    on: '10 4 * * *'  # 毎日12:10 (JST) に実行 (UTC 03:10)
     workflow_dispatch:
 
-bs:    
+bs    :    
   run-bot:
     runs-on: ubuntu-latest
 
