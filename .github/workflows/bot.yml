@@ -3,7 +3,7 @@ name: Run Tweepy Bot
 on:
     schedule:
     - r         on: '10 4 * * *'  # 毎日12:10 (JST) に実行 (UTC 03:10)
-    workflow_dispatch:
+     workflow_dispatch:
 
  bjobs:                :    
   run-bot:
