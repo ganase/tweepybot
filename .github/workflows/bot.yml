@@ -28,7 +28,7 @@ jobs:
       
       - name: Create Google Credentials JSON file
   
-      - nam eSet up Python  with:
+      - nameSet up Python  with:
           python-version: '3.x'
 
       - name: Install dependencies
