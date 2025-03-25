@@ -1,15 +1,12 @@
-namee: Tweepy Bot Workflow
+name: Tweepy Bot Workflow
 
-on:# スケジュールの変
-# スケジュールの変更
+on:
   schedule:
-    - cron: "0 6 * * *"  # 毎日6時に実行
-
-  # 手動トリガーで走らせたい場合 (任意で追加)
-  workflow_dispatch:
+    - cron: "0 6 * * *"  # ??6????
+  workflow_dispatch:      # ??????????
 
 jobs:
-                                                                   run-tweepy-bot:
+  run-tweepy-bot:
     runs-on: ubuntu-latest
 
     env: 
@@ -25,10 +22,15 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      
       - name: Create Google Credentials JSON file
-  
-      - nameSet up Python  with:
+        # ?????????????????????
+        run: |
+          echo "${{ secrets.SERVICE_ACCOUNT_PRIVATE_KEY }}" > credentials.json
+          # ???????credentials.json?????
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
           python-version: '3.x'
 
       - name: Install dependencies
@@ -36,9 +38,10 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Run Tweepy Bot
+      - name: Run Tweepy Bot (scraping)
         run: |
-          python tweepybot_scraping_tuge.py  # 実行したいPythonスクリプト
-    - name: Run Tweepy Bot
-      run: |
-        python tweepybot.py  # 別のプログラム
+          python tweepybot_scraping_tuge.py
+
+      - name: Run Tweepy Bot (main)
+        run: |
+          python tweepybot.py
