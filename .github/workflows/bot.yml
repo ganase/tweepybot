@@ -1,7 +1,7 @@
 name: Tweepy Bot Workflow
 
 on:# スケジュールの変更
-  # スケジュール実行したい場合
+  # スケジュールの変更
   schedule:
     - cron: "0 6 * * *"  # 毎日6時に実行
 
