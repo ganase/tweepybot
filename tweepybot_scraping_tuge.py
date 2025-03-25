@@ -3,9 +3,6 @@
 
 # ## Tableau user group upcoming eventから記事のスクレイピング
 
-# In[9]:
-
-
 import csv
 from datetime import datetime
 from selenium import webdriver
@@ -77,7 +74,7 @@ driver.quit()
 
 # CSVファイルに書き込む
 csv_file = "event_details.csv"
-csv_columns = ["URL", "完了", "コメント", "曜日", "AMPM", "日付","date"]
+csv_columns = ["URL", "完了", "コメント", "曜日", "AMPM", "日付", "date"]
 
 try:
     with open(csv_file, 'w', newline='', encoding='utf-8') as csvfile:
@@ -91,10 +88,7 @@ except IOError:
 print(f"CSV file '{csv_file}' has been created.")
 
 
-# ## Google sheets にスクレイピング結果を書き込み
-
-# In[13]:
-
+# ## Google Sheets にスクレイピング結果を書き込み
 
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
@@ -102,7 +96,7 @@ import pandas as pd
 
 # Google Sheets APIの認証情報を設定
 scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
-creds = ServiceAccountCredentials.from_json_keyfile_name('servic"redentials.json scope)
+creds = ServiceAccountCredentials.from_json_keyfile_name('credentials.json', scope)
 client = gspread.authorize(creds)
 
 # Google Sheetsの指定されたシートを開く
@@ -127,4 +121,3 @@ if new_rows:
     sheet.append_rows(new_rows)
 
 print("Google Sheetsに新しい行が追加されました。")
-
