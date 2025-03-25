@@ -23,9 +23,8 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Create Google Credentials JSON file
-        # 実際に認証ファイルを作るならコマンドを追記
-               run: |
-          printf "%s" "${{ secrets.SERVICE_ACCOUNT_PRIVATE_KEY }}" > credentials.json "${{ secrets.SERVICE_ACCOUNT_PRIVATE_KEY }}" > credentials.json
+        run: |
+          printf "%s" "${{ secrets.SERVICE_ACCOUNT_PRIVATE_KEY }}" > credentials.json
 
       - name: Set up Python
         uses: actions/setup-python@v2
