@@ -24,7 +24,7 @@ jobs:
 
       - name: Create Google Credentials JSON file
         run: |
-          printf "%s" "${{ secrets.SERVICE_ACCOUNT_PRIVATE_KEY }}" > credentials.credentials.json
+         printf "%s" "${{ secrets.SERVICE_ACCOUNT_PRIVATE_KEY }}" | sed 's/\\n/\n/g' > credentials.json
 
       - name: Set up Python
         uses: actions/setup-python@v2
