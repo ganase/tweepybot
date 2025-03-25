@@ -1,4 +1,4 @@
-name: Tweepy Bot Workflow
+namee: Tweepy Bot Workflow
 
 on:# スケジュールの変
 # スケジュールの変更
@@ -28,7 +28,7 @@ jobs:
       
       - name: Create Google Credentials JSON file
   
-      - nam Set up Python  with:
+      - nam eSet up Python  with:
           python-version: '3.x'
 
       - name: Install dependencies
