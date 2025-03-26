@@ -2,11 +2,28 @@ name: Minimal Workflow
 
 on:
   schedule:
-    - cron: "0 6 * * *"  # 毎日6時に実行
+    - cron: "0 6 * * *"
   workflow_dispatch:
 
 jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - run: echo "Hello World"
+      - uses: actions/checkout@v2
+      - name: Create Credentials JSON file (dummy)
+        run: |
+          cat <<EOF > credentials.json
+{
+  "type": "dummy",
+  "project_id": "dummy",
+  "private_key_id": "dummy",
+  "private_key": "dummy",
+  "client_email": "dummy",
+  "client_id": "dummy",
+  "auth_uri": "dummy",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "dummy",
+  "client_x509_cert_url": "dummy"
+}
+EOF
+      - run: echo "Credentials JSON created"
