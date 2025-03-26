@@ -8,5 +8,7 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    env:
+      TEST_VAR: "test"
     steps:
-      - run: echo "Hello World"
+      - run: echo "Hello World. TEST_VAR is $TEST_VAR"
