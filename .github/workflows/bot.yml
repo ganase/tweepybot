@@ -2,13 +2,14 @@ name: Tweepy Bot Workflow
 
 on:
   schedule:
-    - cron: "0 6 * * *"  # 毎日6時に実行
+    - cron: "0 6 * * *"  
+      # Minor change to refresh workflow# 毎日6時に実行
   workflow_dispatch:
 
 jobs:
   run-tweepy-bot:
     runs-on: ubuntu-latest
-    env:
+    env
       SERVICE_ACCOUNT_CLIENT_ID: ${{ secrets.SERVICE_ACCOUNT_CLIENT_ID }}
       SERVICE_ACCOUNT_CLIENT_EMAIL: ${{ secrets.SERVICE_ACCOUNT_CLIENT_EMAIL }}
       SERVICE_ACCOUNT_PRIVATE_KEY: ${{ secrets.SERVICE_ACCOUNT_PRIVATE_KEY }}
@@ -24,7 +25,6 @@ jobs:
       - name: Create Google Credentials JSON file
         run: |
           cat <<EOF > credentials.json
-{
   "type": "${{ secrets.SERVICE_ACCOUNT_TYPE }}
     "project_id": "${{ secrets.SERVICE_ACCOUNT_PROJECT_ID }}",
   
@@ -38,8 +38,8 @@ jobs:
   "auth_provider_x509_cert_url": "${{ secrets.SERVICE_ACCOUNT_CLIENT_X509_CERT_URL }}",
   "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/${{ secrets.SERVICE_ACCOUNT_CLIENT_EMAIL }}"
 }
-EOF
 
+EOF
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
