@@ -1,6 +1,8 @@
 name: Minimal Workflow
 
 on:
+  schedule:
+    - cron: "0 6 * * *"  # 毎日6時に実行
   workflow_dispatch:
 
 jobs:
