@@ -1,9 +1,7 @@
 name: Tweepy Bot Workflow
 
 on:
-  schedule:
-    - cron: "0 6 * * *"  
-      # Minor change to refresh workflow# 毎日6時に実行
+
   workflow_dispatch:
 
 jobs:
