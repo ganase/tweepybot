@@ -8,3 +8,12 @@ jobs:
    runs-on: ubuntu-latest
    steps:
      - run: echo "Hello World"
+     - name: Create dummy JSON
+       run: |
+         cat <<EOF > credentials.json
+{
+  "dummy": "dummy"
+}
+EOF
+      - name: Show JSON file
+        run: cat credentials.json
