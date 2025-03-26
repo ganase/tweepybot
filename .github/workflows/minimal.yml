@@ -11,4 +11,7 @@ jobs:
     env:
       TEST_VAR: "test"
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
       - run: echo "Hello World. TEST_VAR is $TEST_VAR"
