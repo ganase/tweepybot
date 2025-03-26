@@ -2,8 +2,8 @@ name: Tweepy Bot Workflow
 
 on:
   schedule:
-    - cron: "0 6 * * *"  # 毎日6時に実行
-  workflow_dispatch:      # 手動実行を有効にする
+    - cron: "0 6 * * *"
+  workflow_dispatch:
 
 jobs:
   run-tweepy-bot:
