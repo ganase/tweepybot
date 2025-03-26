@@ -24,9 +24,7 @@ jobs:
       - name: Create Google Credentials JSON file
         run: |
           cat <<EOF > credentials.json
-{
-  "type": "${{ secrets.SERVICE_ACCOUNT_TYPE }}",
-  "project_id": "${{ secrets.SERVICE_ACCOUNT_PROJECT_ID }}",
+{  "type": "${{ secrets.SERVICE_ACCOUNT_TYPE }}"project_id": "${{ secrets.SERVICE_ACCOUNT_PROJECT_ID }}",
   "private_key_id": "${{ secrets.SERVICE_ACCOUNT_PRIVATE_KEY_ID }}",
   "private_key": "${{ secrets.SERVICE_ACCOUNT_PRIVATE_KEY }}",
   "client_email": "${{ secrets.SERVICE_ACCOUNT_CLIENT_EMAIL }}",
