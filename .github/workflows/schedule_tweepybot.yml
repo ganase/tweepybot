@@ -1,7 +1,11 @@
+
+on:
+ 
 name: Schedule TweepyBot
 
 on:
-  schedule:
+  
+   workflow_dispatch:schedule:
     - cron: '0 12 * * *' # 毎日12時に実行
 
 jobs:
