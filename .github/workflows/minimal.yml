@@ -1,32 +1,10 @@
-name: Minimal Workflow
+name:Minimal Workflow
 
 on:
   workflow_dispatch:
 
 jobs:
   test:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-
-      - name: Create test file
-        run: |
-          cat <<EOF > test.txt
-Hello World
-This is a heredoc test.
-EOF
-
-      - name: Show test file
-        run: cat test.txt
-
-      - name: Create JSON
-        run: |
-          cat <<EOF > credentials.json
-{
-  "dummy": "dummy"
-}
-EOF
-
-      - name: Show JSON
-        run: cat credentials.json
+   runs-on:ubuntu-latest
+   steps:
+     - run: echo "Hello World"
