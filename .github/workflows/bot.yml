@@ -10,14 +10,14 @@ jobs:
   run-tweepy-bot:
     runs-on: ubuntu-latest
         env
-            SERVICE_ACCOUNT_CLIENT_ID: ${{ secrets.SERVICE_ACCOUNT_CLIENT_ID }}
-            SERVICE_ACCOUNT_CLIENT_EMAIL: ${{ secrets.SERVICE_ACCOUNT_CLIENT_EMAIL }}
-              SERVICE_ACCOUNT_PRIVATE_KEY: ${{ secrets.SERVICE_ACCOUNT_PRIVATE_KEY }}
-              SERVICE_ACCOUNT_PRIVATE_KEY_ID: ${{ secrets.SERVICE_ACCOUNT_PRIVATE_KEY_ID }}
-              SERVICE_ACCOUNT_PROJECT_ID: ${{ secrets.SERVICE_ACCOUNT_PROJECT_ID }}
-              SERVICE_ACCOUNT_TYPE: ${{ secrets.SERVICE_ACCOUNT_TYPE }},
-              SERVICE_ACCOUNT_CLIENT_X509_CERT_URL: ${{ secrets.SERVICE_ACCOUNT_CLIENT_X509_CERT_URL }}
-              SERVICE_ACCOUNT_AUTH_URI: ${{ secrets.SERVICE_ACCOUNT_AUTH_URI }}
+              SERVICE_ACCOUNT_CLIENT_ID: ${{ secrets.SERVICE_ACCOUNT_CLIENT_ID }}
+              SERVICE_ACCOUNT_CLIENT_EMAIL: ${{ secrets.SERVICE_ACCOUNT_CLIENT_EMAIL }}
+                SERVICE_ACCOUNT_PRIVATE_KEY: ${{ secrets.SERVICE_ACCOUNT_PRIVATE_KEY }}
+                SERVICE_ACCOUNT_PRIVATE_KEY_ID: ${{ secrets.SERVICE_ACCOUNT_PRIVATE_KEY_ID }}
+                SERVICE_ACCOUNT_PROJECT_ID: ${{ secrets.SERVICE_ACCOUNT_PROJECT_ID }}
+                SERVICE_ACCOUNT_TYPE: ${{ secrets.SERVICE_ACCOUNT_TYPE }},
+                SERVICE_ACCOUNT_CLIENT_X509_CERT_URL: ${{ secrets.SERVICE_ACCOUNT_CLIENT_X509_CERT_URL }}
+                SERVICE_ACCOUNT_AUTH_URI: ${{ secrets.SERVICE_ACCOUNT_AUTH_URI }}
     
       steps:
         - uses: actions/checkout@v2
