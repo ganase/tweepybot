@@ -10,20 +10,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Create Credentials JSON file (dummy)
+      - name: Create test file
         run: |
-          cat <<EOF > credentials.json
-{
-  "type": "dummy",
-  "project_id": "dummy",
-  "private_key_id": "dummy",
-  "private_key": "dummy",
-  "client_email": "dummy",
-  "client_id": "dummy",
-  "auth_uri": "dummy",
-  "token_uri": "https://oauth2.googleapis.com/token",
-  "auth_provider_x509_cert_url": "dummy",
-  "client_x509_cert_url": "dummy"
-}
+          cat <<EOF > test.txt
+Hello World
 EOF
-      - run: echo "Credentials JSON created"
+      - run: echo "File created"
