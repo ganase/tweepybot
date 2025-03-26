@@ -19,7 +19,8 @@ jobs:
       SERVICE_ACCOUNT_AUTH_URI: ${{ secrets.SERVICE_ACCOUNT_AUTH_URI }}
 
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout repository
+        uses: actions/checkout@v2
 
       - name: Create Google Credentials JSON file
         run: |
