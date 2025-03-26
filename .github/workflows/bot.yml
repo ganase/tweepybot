@@ -8,11 +8,8 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    env:
+      TEST_VAR: "test"
     steps:
       - uses: actions/checkout@v2
-      - name: Create test file
-        run: |
-          cat <<EOF > test.txt
-Hello World
-EOF
-      - run: echo "File created"
+      - run: echo "Hello World"
