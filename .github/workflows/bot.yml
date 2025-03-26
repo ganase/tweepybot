@@ -30,6 +30,7 @@ jobs:
   "client_email": "${{ secrets.SERVICE_ACCOUNT_CLIENT_EMAIL }}",
   "client_id": "${{ secrets.SERVICE_ACCOUNT_CLIENT_ID }}",
   "auth_uri": "${{ secrets.SERVICE_ACCOUNT_AUTH_URI }}",
+    EOF
   "token_uri": "https://oauth2.googleapis.com/token",
   "auth_provider_x509_cert_url": "${{ secrets.SERVICE_ACCOUNT_CLIENT_X509_CERT_URL }}",
   "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/${{ secrets.SERVICE_ACCOUNT_CLIENT_EMAIL }}"
