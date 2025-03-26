@@ -14,4 +14,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - run: echo "Hello World. TEST_VAR is $TEST_VAR"
+      - name: Create test file using heredoc
+        run: |
+          cat <<EOF > test.txt
