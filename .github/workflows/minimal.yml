@@ -17,3 +17,25 @@ jobs:
       - name: Create test file using heredoc
         run: |
           cat <<EOF > test.txt
+Hello World
+This is a heredoc test.
+EOF
+
+      - name: Show file content
+        run: cat test.txt
+
+      - name: Create dummy JSON
+        run: |
+          cat <<EOF > credentials.json
+{
+  "type": "dummy",
+  "project_id": "dummy",
+  "private_key_id": "dummy",
+  "private_key": "dummy"
+}
+EOF
+
+      - name: Show JSON file
+        run: cat credentials.json
+
+      - run: echo "Hello World. TEST_VAR is $TEST_VAR"
