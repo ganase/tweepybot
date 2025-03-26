@@ -8,8 +8,15 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    env:
-      TEST_VAR: "test"
     steps:
-      - uses: actions/checkout@v2
-      - run: echo "Hello World"
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Create test file using heredoc
+        run: |
+          cat <<EOF > test.txt
+Hello World
+EOF
+
+      - name: Show file content
+        run: cat test.txt
