@@ -2,25 +2,13 @@ name: Tweepy Bot Workflow
 
 on:
   schedule:
-    - cron: "0 6 * * *"  # 毎日6時に実行
+    - cron: "0 6 * * *"
   workflow_dispatch:
 
 jobs:
   run-tweepy-bot:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-
-      - name: Set up Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: "3.x"
-
-      - name: Install dependencies
-        run: |
-          echo "No real dependencies for now"
-
       - name: Create dummy JSON
         run: |
           cat <<EOF > credentials.json
@@ -29,10 +17,4 @@ jobs:
 }
 EOF
 
-      - name: Show JSON file
-        run: cat credentials.json
-
-      - name: Run test script
-        run: |
-          echo "print('Hello from Python!')" > test.py
-          python test.py
+      - run: echo "Done"
