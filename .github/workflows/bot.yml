@@ -10,11 +10,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Create dummy JSON
-        run: |
+        run: |2
           cat <<'EOF' > credentials.json
-{
-  "dummy": "dummy"
-}
-EOF
+          {
+            "dummy": "dummy"
+          }
+          EOF
       - name: Finish
         run: echo "Done"
