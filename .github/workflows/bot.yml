@@ -37,7 +37,9 @@ jobs:
           echo "\"type\": \"${{ secrets.SERVICE_ACCOUNT_TYPE }}\"," >> credentials.json
           echo "\"project_id\": \"${{ secrets.SERVICE_ACCOUNT_PROJECT_ID }}\"," >> credentials.json
           echo "\"private_key_id\": \"${{ secrets.SERVICE_ACCOUNT_PRIVATE_KEY_ID }}\"," >> credentials.json
-          echo "\"private_key\": \"${{ secrets.SERVICE_ACCOUNT_PRIVATE_KEY }}\"," >> credentials.json
+          echo -n "\"private_key\": \"" >> credentials.json
+          echo "${{ secrets.SERVICE_ACCOUNT_PRIVATE_KEY }}" | sed 's/\\n/\n/g' >> credentials.json
+          echo "\"," >> credentials.json
           echo "\"client_email\": \"${{ secrets.SERVICE_ACCOUNT_CLIENT_EMAIL }}\"," >> credentials.json
           echo "\"client_id\": \"${{ secrets.SERVICE_ACCOUNT_CLIENT_ID }}\"," >> credentials.json
           echo "\"auth_uri\": \"${{ secrets.SERVICE_ACCOUNT_AUTH_URI }}\"," >> credentials.json
