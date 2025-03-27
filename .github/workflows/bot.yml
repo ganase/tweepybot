@@ -33,20 +33,18 @@ jobs:
 
       - name: Create Google Credentials JSON file
         run: |
-          cat <<'EOF' > credentials.json
-{
-  "type": "${{ secrets.SERVICE_ACCOUNT_TYPE }}",
-  "project_id": "${{ secrets.SERVICE_ACCOUNT_PROJECT_ID }}",
-  "private_key_id": "${{ secrets.SERVICE_ACCOUNT_PRIVATE_KEY_ID }}",
-  "private_key": "${{ secrets.SERVICE_ACCOUNT_PRIVATE_KEY }}",
-  "client_email": "${{ secrets.SERVICE_ACCOUNT_CLIENT_EMAIL }}",
-  "client_id": "${{ secrets.SERVICE_ACCOUNT_CLIENT_ID }}",
-  "auth_uri": "${{ secrets.SERVICE_ACCOUNT_AUTH_URI }}",
-  "token_uri": "https://oauth2.googleapis.com/token",
-  "auth_provider_x509_cert_url": "${{ secrets.SERVICE_ACCOUNT_CLIENT_X509_CERT_URL }}",
-  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/${{ secrets.SERVICE_ACCOUNT_CLIENT_EMAIL }}"
-}
-EOF
+          echo "{" > credentials.json
+          echo "\"type\": \"${{ secrets.SERVICE_ACCOUNT_TYPE }}\"," >> credentials.json
+          echo "\"project_id\": \"${{ secrets.SERVICE_ACCOUNT_PROJECT_ID }}\"," >> credentials.json
+          echo "\"private_key_id\": \"${{ secrets.SERVICE_ACCOUNT_PRIVATE_KEY_ID }}\"," >> credentials.json
+          echo "\"private_key\": \"${{ secrets.SERVICE_ACCOUNT_PRIVATE_KEY }}\"," >> credentials.json
+          echo "\"client_email\": \"${{ secrets.SERVICE_ACCOUNT_CLIENT_EMAIL }}\"," >> credentials.json
+          echo "\"client_id\": \"${{ secrets.SERVICE_ACCOUNT_CLIENT_ID }}\"," >> credentials.json
+          echo "\"auth_uri\": \"${{ secrets.SERVICE_ACCOUNT_AUTH_URI }}\"," >> credentials.json
+          echo "\"token_uri\": \"https://oauth2.googleapis.com/token\"," >> credentials.json
+          echo "\"auth_provider_x509_cert_url\": \"${{ secrets.SERVICE_ACCOUNT_CLIENT_X509_CERT_URL }}\"," >> credentials.json
+          echo "\"client_x509_cert_url\": \"https://www.googleapis.com/robot/v1/metadata/x509/${{ secrets.SERVICE_ACCOUNT_CLIENT_EMAIL }}\"" >> credentials.json
+          echo "}" >> credentials.json
 
       - name: Set up Python
         uses: actions/setup-python@v2
