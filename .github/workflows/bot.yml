@@ -36,7 +36,7 @@ jobs:
           python -c "import json, os; creds = { 'type': os.environ['SERVICE_ACCOUNT_TYPE'], 'project_id': os.environ['SERVICE_ACCOUNT_PROJECT_ID'], 'private_key_id': os.environ['SERVICE_ACCOUNT_PRIVATE_KEY_ID'], 'private_key': os.environ['SERVICE_ACCOUNT_PRIVATE_KEY'].replace('\\n', '\n'), 'client_email': os.environ['SERVICE_ACCOUNT_CLIENT_EMAIL'], 'client_id': os.environ['SERVICE_ACCOUNT_CLIENT_ID'], 'auth_uri': os.environ['SERVICE_ACCOUNT_AUTH_URI'], 'token_uri': 'https://oauth2.googleapis.com/token', 'auth_provider_x509_cert_url': os.environ['SERVICE_ACCOUNT_CLIENT_X509_CERT_URL'], 'client_x509_cert_url': 'https://www.googleapis.com/robot/v1/metadata/x509/' + os.environ['SERVICE_ACCOUNT_CLIENT_EMAIL'] }; json.dump(creds, open('credentials.json','w'))"
 
       - name: Upload credentials.json for debugging (Remove after testing)
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3.1.2
         with:
           name: credentials-json
           path: credentials.json
