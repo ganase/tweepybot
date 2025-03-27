@@ -8,10 +8,23 @@ on:
 jobs:
   run-tweepy-bot:
     runs-on: ubuntu-latest
-    env:
-      DUMMY_VAR: "dummy"
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - run: echo "Bot minimal. DUMMY_VAR=$DUMMY_VAR"
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.x"
+
+      - name: Install dependencies
+        run: |
+          # (requirements.txt がある場合のみ)
+          # python -m pip install --upgrade pip
+          # pip install -r requirements.txt
+          echo "No real dependencies for now"
+
+      - name: Run test script
+        run: |
+          echo "print('Hello from Python!')" > test.py
+          python test.py
