@@ -8,5 +8,7 @@ on:
 jobs:
   run-tweepy-bot:
     runs-on: ubuntu-latest
+    env:
+      DUMMY_VAR: "dummy"
     steps:
-      - run: echo "Bot minimal"
+      - run: echo "Bot minimal. DUMMY_VAR=$DUMMY_VAR"
