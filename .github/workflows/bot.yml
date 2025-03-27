@@ -33,7 +33,7 @@ jobs:
 
       - name: Create Google Credentials JSON file
         run: |
-          python - <<'EOF'
+          python - <<EOF
 import json, os
 creds = {
     "type": os.environ["SERVICE_ACCOUNT_TYPE"],
@@ -62,9 +62,7 @@ EOF
           pip install -r requirements.txt
 
       - name: Run Tweepy Bot (scraping)
-        run: |
-          python tweepybot_scraping_tuge.py
+        run: python tweepybot_scraping_tuge.py
 
       - name: Run Tweepy Bot (main)
-        run: |
-          python tweepybot.py
+        run: python tweepybot.py
