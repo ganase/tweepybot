@@ -11,10 +11,11 @@ jobs:
     steps:
       - name: Create dummy JSON
         run: |
+          # JSONファイルにダミー内容を書き込む
           cat <<EOF > credentials.json
-{
-  "dummy": "dummy"
-}
-EOF
-
-      - run: echo "Done"
+          {
+            "dummy": "dummy"
+          }
+          EOF
+      - name: Finish
+        run: echo "Done"
