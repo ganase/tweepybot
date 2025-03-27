@@ -26,6 +26,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y chromium-browser chromium-chromedriver
           sudo ln -sf /usr/lib/chromium-browser/chromedriver /usr/bin/chromedriver || true
+          sudo ln -sf /usr/bin/chromium-browser /usr/bin/google-chrome || true
 
       - name: Create Google Credentials JSON file
         run: |2
