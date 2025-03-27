@@ -102,7 +102,7 @@ import pandas as pd
 
 # Google Sheets APIの認証情報を設定
 scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
-creds = ServiceAccountCredentials.from_json_keyfile_name('service_account.json', scope)
+creds = ServiceAccountCredentials.from_json_keyfile_name('credentials.json', scope)
 client = gspread.authorize(creds)
 
 # Google Sheetsの指定されたシートを開く
