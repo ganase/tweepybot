@@ -29,7 +29,8 @@ run-tweepy-bot:
             sudo ln -sf /usr/bin/chromium /usr/bin/google-chrome || true
           else
             sudo ln -sf /usr/bin/chromium-browser /usr/bin/google-chrome || true
-  
+
+  # Added comment to test syntax
           # Added comment to test syntaxfi
 
       - name: Create Google Credentials JSON file
