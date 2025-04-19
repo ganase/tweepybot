@@ -1,49 +1,56 @@
-GitHub Actions トリガ
+# Tweepy Bot – Auto‑tweet & Google Sheets Sync
 
-cron: "0 6 * * *" → JST 15:00 に起動
+Tweepy Bot は **X (Twitter) API v2** と **Google Sheets** を連携し、  
+指定サイトをスクレイピングして得たイベント情報をツイートする CI ボットです。  
+GitHub Actions で毎日自動実行され、失敗時は “Failed to get information” を投稿します。
 
-または workflow_dispatch で手動実行
+---
 
-ワークフロー手順
+## Quick Start (5 minutes)
 
-Checkout – リポジトリ取得
+1. **Fork / Clone**
+   ```bash
+   gh repo fork ganase/tweepybot --clone
+   cd tweepybot
+   ```
 
-credentials.json 作成 – SERVICE_ACCOUNT_JSON Secret を書き出す
+2. **Secrets を登録（Settings → Secrets → Actions）**
 
-Chromium & Chromedriver インストール – Selenium 用
+   | Name | Value |
+   |------|-------|
+   | `SERVICE_ACCOUNT_JSON` | Google Cloud で発行したサービスアカウント JSON |
+   | `TW_BEARER_TOKEN` | X API Bearer Token |
+   | `TW_CONSUMER_KEY` / `TW_CONSUMER_SECRET` | X API Key / Secret |
+   | `TW_ACCESS_TOKEN`  / `TW_ACCESS_SECRET` | X Access Token / Secret |
 
-Python セットアップ – 3.12 + requirements.txt
+3. **シート URL を修正**  
+   `tweepybot.py` → `SPREADSHEET_URL` を自分の Google Sheets に変更  
+   （列構成サンプルは docs/DEVELOPER_GUIDE.md を参照）
 
-twitter_key.json 作成 – Twitter API トークン 5 種を Secrets から書き出し
+4. **手動テスト**  
+   GitHub → **Actions** → “Tweepy Bot Workflow” → **Run workflow**  
+   成功すると X アカウントにツイートが投稿されます。
 
-tweepybot_scraping_tuge.py 実行
+---
 
-Tableau User Group のイベント一覧ページを Selenium で開く
+## スケジュール
 
-タイトル・URL・日付を取得し event_details.csv 生成
+| Cron 設定 | 実行時刻 |
+|-----------|-----------|
+| `0 6 * * *` | **UTC 06:00 → JST 15:00** 毎日 |
 
-Google Sheets（URL 固定）に書き込み
+変更したい場合は `.github/workflows/bot.yml` の `cron` を編集してください。
 
-tweepybot.py 実行
+---
 
-Google Sheets から “今日以降の未投稿イベント” を取得
+## カスタマイズ
 
-日付やタグを整形してツイート本文を生成
+スクレイピング対象が変わる場合、  
+**`tweepybot_scraping_tuge.py` を全面書き換え** する必要があります。  
+詳しい手順は [docs/DEVELOPER_GUIDE.md](docs/DEVELOPER_GUIDE.md) を参照してください。
 
-Tweepy v2 で X(Twitter) へ投稿
+---
 
-投稿済み行に “posted” フラグを書き戻し
+## License
 
-ジョブ終了 – 正常なら exit 0、失敗時はログに残る
-
-エラーハンドリング
-
-認証失敗 → Google / Twitter いずれも RefreshError や 4xx が出力
-
-シート側で重複フラグが無い場合のみツイートするロジックで多重投稿を防止
-
-監視・保守
-
-CI 成功／失敗は GitHub の workflow run で確認
-
-Google Sheets 側で “posted” 列を手動修正すれば再投稿も可能
+MIT © 2025  
