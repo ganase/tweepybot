@@ -110,7 +110,7 @@ def main():
     # スクレイピング or シート取得失敗時
     if not pending:
         logging.warning("No info fetched; sending failure tweet.")
-        tweet("Failed to get information")
+        tweet("こんにちは！お元気ですか？")
         return
 
     tweeted = []
