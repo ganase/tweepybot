@@ -2,7 +2,8 @@ name: Tweepy Bot Workflow
 
 on:
   schedule:
-    - cron: "0 6 * * *"   # 毎日 06:00 UTC（JST 15:00）。JST 06:00 実行にしたい場合は 0 21 * * * に変更。
+    # 06:00 UTC 実行（JST 15:00）。JST 06:00 にしたい場合は 0 21 * * * に変更してください
+    - cron: "0 6 * * *"
   workflow_dispatch:
 
 jobs:
@@ -10,17 +11,17 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1) リポジトリをチェックアウト
+      # 1) リポジトリを取得
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 2) Service‑Account JSON をファイルに書き出し
+      # 2) Google サービスアカウント JSON を書き出し
       - name: Write credentials.json
         run: echo "$SERVICE_ACCOUNT_JSON" > credentials.json
         env:
           SERVICE_ACCOUNT_JSON: ${{ secrets.SERVICE_ACCOUNT_JSON }}
 
-      # 3) Chromium + Chromedriver をインストール
+      # 3) Chromium & Chromedriver
       - name: Install Chromium and Chromedriver
         run: |
           sudo apt-get update
@@ -37,16 +38,29 @@ jobs:
         with:
           python-version: "3.12"
 
-      # 5) 依存ライブラリをインストール
+      # 5) 依存関係
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      # 6) スクレイピング用スクリプトを実行
+      # 6) Twitter API キーを書き出し
+      - name: Write twitter_key.json
+        run: |
+          cat > twitter_key.json <<'EOF'
+          {
+            "BEARER_TOKEN": "${{ secrets.TW_BEARER_TOKEN }}",
+            "CONSUMER_KEY": "${{ secrets.TW_CONSUMER_KEY }}",
+            "CONSUMER_SECRET": "${{ secrets.TW_CONSUMER_SECRET }}",
+            "ACCESS_TOKEN": "${{ secrets.TW_ACCESS_TOKEN }}",
+            "ACCESS_SECRET": "${{ secrets.TW_ACCESS_SECRET }}"
+          }
+          EOF
+
+      # 7) スクレイピング
       - name: Run Tweepy Bot (scraping)
         run: python tweepybot_scraping_tuge.py
 
-      # 7) 投稿用スクリプトを実行
+      # 8) ツイート投稿
       - name: Run Tweepy Bot (main)
         run: python tweepybot.py
