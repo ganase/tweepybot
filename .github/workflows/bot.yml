@@ -2,8 +2,8 @@ name: Tweepy Bot Workflow
 
 on:
   schedule:
-    # 06:00 UTC（JST 15:00）実行。JST 06:00 にしたい場合は 0 21 * * * に変更
-    - cron: "0 6 * * *"
+    # 21:00 UTC（JST 6:00）実行。JST 15:00 にしたい場合は 0 6 * * * に変更
+    - cron: "0 21 * * *"
   workflow_dispatch:
 
 jobs:
