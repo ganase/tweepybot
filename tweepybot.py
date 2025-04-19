@@ -1,134 +1,133 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[5]:
-
-
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 import tweepy
 import datetime
 import json
 import logging
+import sys
+import traceback
 
-# ロギングの設定（指定されたディレクトリにログファイルを保存）
+# ── ロギング ─────────────────────────
 logging.basicConfig(
     filename='tweetbot.log',
-    level=logging.DEBUG,  # DEBUGレベルに設定してすべてのログをキャプチャ
+    level=logging.DEBUG,
     format='%(asctime)s - %(levelname)s - %(message)s'
 )
+logging.info("Logging configured")
 
-# ロギングが設定されているか確認するためのメッセージ
-logging.info("Logging is configured correctly.")
-
-# Google スプレッドシート API の設定
-scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
-creds = ServiceAccountCredentials.from_json_keyfile_name('credentials.json', scope)
+# ── Google Sheets 認証 ────────────────
+scope = [
+    "https://spreadsheets.google.com/feeds",
+    "https://www.googleapis.com/auth/drive"
+]
+creds = ServiceAccountCredentials.from_json_keyfile_name(
+    'credentials.json', scope
+)
 client = gspread.authorize(creds)
 
-# スプレッドシートを開く
-spreadsheet_url = 'https://docs.google.com/spreadsheets/d/1RAZwuhJkpkca4QaVLVO9fzW68TKqLTxIhSfhrGR1Jjw/edit?usp=sharing'
-spreadsheet = client.open_by_url(spreadsheet_url)
-sheet = spreadsheet.sheet1
+SPREADSHEET_URL = (
+    'https://docs.google.com/spreadsheets/d/'
+    '1RAZwuhJkpkca4QaVLVO9fzW68TKqLTxIhSfhrGR1Jjw/edit?usp=sharing'
+)
 
-# Twitter APIの設定をjsonファイルから読み込み
-def load_twitter_keys(json_path):
-    with open(json_path, mode='r', encoding='utf-8') as file:
-        keys = json.load(file)
-        return keys
+try:
+    spreadsheet = client.open_by_url(SPREADSHEET_URL)
+    sheet = spreadsheet.sheet1
+except Exception as e:
+    logging.error(f"Unable to open spreadsheet: {e}")
+    sheet = None  # 後で失敗判定に使う
 
-# JSONファイルからTwitter APIキーを読み込む
-twitter_keys = load_twitter_keys('twitter_key.json')
+# ── Twitter 認証 ──────────────────────
+def load_twitter_keys(path='twitter_key.json'):
+    with open(path, encoding='utf-8') as f:
+        return json.load(f)
 
-# Twitter API v2用の認証情報
-BEARER_TOKEN = twitter_keys['BEARER_TOKEN']
-CONSUMER_KEY = twitter_keys['CONSUMER_KEY']
-CONSUMER_SECRET = twitter_keys['CONSUMER_SECRET']
-ACCESS_TOKEN = twitter_keys['ACCESS_TOKEN']
-ACCESS_SECRET = twitter_keys['ACCESS_SECRET']
+k = load_twitter_keys()
+twitter_client = tweepy.Client(
+    bearer_token=k['BEARER_TOKEN'],
+    consumer_key=k['CONSUMER_KEY'],
+    consumer_secret=k['CONSUMER_SECRET'],
+    access_token=k['ACCESS_TOKEN'],
+    access_token_secret=k['ACCESS_SECRET']
+)
 
-# Tweepyのクライアントを設定（Twitter API v2用）
-twitter_client = tweepy.Client(bearer_token=BEARER_TOKEN,
-                               consumer_key=CONSUMER_KEY,
-                               consumer_secret=CONSUMER_SECRET,
-                               access_token=ACCESS_TOKEN,
-                               access_token_secret=ACCESS_SECRET)
-
-# 完了していないURLを取得
-def get_pending_urls(sheet, current_date, current_day, ampm):
-    pending_urls = []
+# ── ユーティリティ ───────────────────
+def tweet(text: str):
     try:
-        records = sheet.get_all_records()
-        logging.debug(f"Records from spreadsheet: {records}")
-        for row in records:
-            # 日付が優先、次に曜日と時間帯をチェック
-            if row['完了'] != 1 and (
-                (row['日付'] == current_date) or 
-                (not row['日付'] and int(row['曜日']) == current_day and int(row['AMPM']) == ampm)
-            ):
-                pending_urls.append(row)
-        logging.info(f"Pending URLs loaded successfully: {pending_urls}")
-    except KeyError as e:
-        logging.error(f"KeyError: {e}. Check if the spreadsheet has the correct headers.")
-    except Exception as e:
-        logging.error(f"An error occurred while loading pending URLs: {e}")
-    return pending_urls
-
-# URLとコメントをツイートする
-def tweet_url(url, comment):
-    tweet_text = f"{comment} {url}"
-    try:
-        response = twitter_client.create_tweet(text=tweet_text)
-        tweet_id = response.data['id']
-        logging.info(f"Successfully tweeted: '{tweet_text}' with Tweet ID: {tweet_id}")
+        resp = twitter_client.create_tweet(text=text)
+        tweet_id = resp.data['id']
+        logging.info(f"Tweeted: {text} (id={tweet_id})")
         return tweet_id
-    except tweepy.TweepyException as e:
-        logging.error(f"Error tweeting: '{tweet_text}': {e.response.text}")
-        return None
     except Exception as e:
-        logging.error(f"An unexpected error occurred when tweeting: '{tweet_text}': {e}")
+        logging.error(f"Tweet failed: {e}")
         return None
 
-# スプレッドシートを更新
-def mark_as_done(sheet, tweeted_urls):
+def get_pending(sheet, today_str, weekday, ampm):
+    if sheet is None:
+        return []
     try:
         records = sheet.get_all_records()
-        logging.info(f"Updating spreadsheet for URLs: {tweeted_urls}")
-        for i, row in enumerate(records):
-            if row['URL'] in tweeted_urls:
-                # 行を見つけて完了フラグを更新
-                cell = sheet.find(row['URL'])
-                if cell:
-                    complete_cell = sheet.cell(cell.row, cell.col + 1)
-                    logging.info(f"Updating cell at row {cell.row}, col {cell.col + 1} (current value: {complete_cell.value}) to 1")
-                    sheet.update_cell(cell.row, cell.col + 1, 1)  # 完了列を更新
-        logging.info("Spreadsheet updated successfully.")
     except Exception as e:
-        logging.error(f"An error occurred while updating the spreadsheet: {e}")
+        logging.error(f"Sheet fetch error: {e}")
+        return []
 
-# 毎日実行し、実行日の条件に一致するURLをツイート
+    pending = []
+    for row in records:
+        try:
+            if row['完了'] != 1 and (
+                (row['日付'] == today_str) or
+                (not row['日付'] and int(row['曜日']) == weekday and int(row['AMPM']) == ampm)
+            ):
+                pending.append(row)
+        except KeyError:
+            logging.error("Spreadsheet headers mismatch")
+            return []
+    return pending
+
+def mark_as_done(sheet, urls):
+    if sheet is None or not urls:
+        return
+    try:
+        for url in urls:
+            cell = sheet.find(url)
+            if cell:
+                sheet.update_cell(cell.row, cell.col + 1, 1)
+    except Exception as e:
+        logging.error(f"Update sheet error: {e}")
+
+# ── メイン処理 ────────────────────────
 def main():
-    current_date = datetime.datetime.today().strftime('%Y/%m/%d')  # 今日の日付を取得
-    current_day = datetime.datetime.today().weekday()  # 今日の曜日を取得
-    current_hour = datetime.datetime.now().hour
-    ampm = 0 if current_hour < 12 else 1  # 午前なら0、午後なら1
+    today = datetime.datetime.today()
+    today_str = today.strftime('%Y/%m/%d')
+    weekday   = today.weekday()
+    ampm      = 0 if today.hour < 12 else 1
 
-    pending_urls = get_pending_urls(sheet, current_date, current_day, ampm)
-    logging.info(f"Pending URLs to tweet: {pending_urls}")
-    tweeted_urls = []
-    for row in pending_urls:
+    pending = get_pending(sheet, today_str, weekday, ampm)
+
+    # スクレイピング or シート取得失敗時
+    if not pending:
+        logging.warning("No info fetched; sending failure tweet.")
+        tweet("Failed to get information")
+        return
+
+    tweeted = []
+    for row in pending:
         url = row['URL']
         comment = row['コメントjp']
-        logging.info(f"Attempting to tweet URL: {url} with comment: {comment}")
-        tweet_id = tweet_url(url, comment)
-        if tweet_id:
-            tweeted_urls.append(url)
-        else:
-            logging.error(f"Failed to tweet URL: {url}")
-    if tweeted_urls:
-        mark_as_done(sheet, tweeted_urls)
-        logging.info(f"Updated spreadsheet after tweeting URLs: {tweeted_urls}")
+        if tweet(f"{comment} {url}"):
+            tweeted.append(url)
 
+    mark_as_done(sheet, tweeted)
+
+# ── エントリポイント ──────────────────
 if __name__ == "__main__":
-    main()
-
+    try:
+        main()
+    except Exception as e:
+        logging.error(f"Unhandled exception: {e}")
+        traceback.print_exc()
+        tweet("Failed to get information")
+        sys.exit(1)
