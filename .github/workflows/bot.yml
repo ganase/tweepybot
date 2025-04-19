@@ -2,7 +2,7 @@ name: Tweepy Bot Workflow
 
 on:
   schedule:
-    # 06:00 UTC 実行（JST 15:00）。JST 06:00 にしたい場合は 0 21 * * * に変更してください
+    # 06:00 UTC（JST 15:00）実行。JST 06:00 にしたい場合は 0 21 * * * に変更
     - cron: "0 6 * * *"
   workflow_dispatch:
 
@@ -11,11 +11,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1) リポジトリを取得
+      # 1) リポジトリ取得
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 2) Google サービスアカウント JSON を書き出し
+      # 2) Google 認証ファイル作成
       - name: Write credentials.json
         run: echo "$SERVICE_ACCOUNT_JSON" > credentials.json
         env:
@@ -32,19 +32,19 @@ jobs:
             sudo ln -sf /usr/bin/chromium-browser /usr/bin/google-chrome || true
           fi
 
-      # 4) Python セットアップ
+      # 4) Python
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
 
-      # 5) 依存関係
+      # 5) 依存ライブラリ
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      # 6) Twitter API キーを書き出し
+      # 6) Twitter API キー
       - name: Write twitter_key.json
         run: |
           cat > twitter_key.json <<'EOF'
@@ -60,7 +60,8 @@ jobs:
       # 7) スクレイピング
       - name: Run Tweepy Bot (scraping)
         run: python tweepybot_scraping_tuge.py
+        continue-on-error: true        # ← 失敗しても後続へ進む
 
-      # 8) ツイート投稿
+      # 8) 投稿
       - name: Run Tweepy Bot (main)
         run: python tweepybot.py
