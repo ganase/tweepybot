@@ -2,25 +2,25 @@ name: Tweepy Bot Workflow
 
 on:
   schedule:
-    - cron: "0 6 * * *"  # 毎日6時に実行
+    - cron: "0 6 * * *"   # 毎日 06:00 UTC（JST 15:00）。JST 06:00 実行にしたい場合は 0 21 * * * に変更。
   workflow_dispatch:
 
 jobs:
   run-tweepy-bot:
     runs-on: ubuntu-latest
-    env:
-      SERVICE_ACCOUNT_CLIENT_ID: ${{ secrets.SERVICE_ACCOUNT_CLIENT_ID }}
-      SERVICE_ACCOUNT_CLIENT_EMAIL: ${{ secrets.SERVICE_ACCOUNT_CLIENT_EMAIL }}
-      SERVICE_ACCOUNT_PRIVATE_KEY: ${{ secrets.SERVICE_ACCOUNT_PRIVATE_KEY }}
-      SERVICE_ACCOUNT_PRIVATE_KEY_ID: ${{ secrets.SERVICE_ACCOUNT_PRIVATE_KEY_ID }}
-      SERVICE_ACCOUNT_PROJECT_ID: ${{ secrets.SERVICE_ACCOUNT_PROJECT_ID }}
-      SERVICE_ACCOUNT_TYPE: ${{ secrets.SERVICE_ACCOUNT_TYPE }}
-      SERVICE_ACCOUNT_CLIENT_X509_CERT_URL: ${{ secrets.SERVICE_ACCOUNT_CLIENT_X509_CERT_URL }}
-      SERVICE_ACCOUNT_AUTH_URI: ${{ secrets.SERVICE_ACCOUNT_AUTH_URI }}
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
 
+    steps:
+      # 1) リポジトリをチェックアウト
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 2) Service‑Account JSON をファイルに書き出し
+      - name: Write credentials.json
+        run: echo "$SERVICE_ACCOUNT_JSON" > credentials.json
+        env:
+          SERVICE_ACCOUNT_JSON: ${{ secrets.SERVICE_ACCOUNT_JSON }}
+
+      # 3) Chromium + Chromedriver をインストール
       - name: Install Chromium and Chromedriver
         run: |
           sudo apt-get update
@@ -31,22 +31,22 @@ jobs:
             sudo ln -sf /usr/bin/chromium-browser /usr/bin/google-chrome || true
           fi
 
-      - name: Create Google Credentials JSON file
-        run: |
-          python -c "import json, os; creds = { 'type': os.environ['SERVICE_ACCOUNT_TYPE'], 'project_id': os.environ['SERVICE_ACCOUNT_PROJECT_ID'], 'private_key_id': os.environ['SERVICE_ACCOUNT_PRIVATE_KEY_ID'], 'private_key': os.environ['SERVICE_ACCOUNT_PRIVATE_KEY'].replace('\\n', '\n'), 'client_email': os.environ['SERVICE_ACCOUNT_CLIENT_EMAIL'], 'client_id': os.environ['SERVICE_ACCOUNT_CLIENT_ID'], 'auth_uri': os.environ['SERVICE_ACCOUNT_AUTH_URI'], 'token_uri': 'https://oauth2.googleapis.com/token', 'auth_provider_x509_cert_url': os.environ['SERVICE_ACCOUNT_CLIENT_X509_CERT_URL'], 'client_x509_cert_url': 'https://www.googleapis.com/robot/v1/metadata/x509/' + os.environ['SERVICE_ACCOUNT_CLIENT_EMAIL'] }; json.dump(creds, open('credentials.json','w'))"
-
+      # 4) Python セットアップ
       - name: Set up Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v5
         with:
-          python-version: "3.x"
+          python-version: "3.12"
 
+      # 5) 依存ライブラリをインストール
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
+      # 6) スクレイピング用スクリプトを実行
       - name: Run Tweepy Bot (scraping)
         run: python tweepybot_scraping_tuge.py
 
+      # 7) 投稿用スクリプトを実行
       - name: Run Tweepy Bot (main)
         run: python tweepybot.py
