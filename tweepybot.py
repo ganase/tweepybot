@@ -69,31 +69,15 @@ def tweet(text: str):
 def get_pending(sheet, today_str, weekday, ampm):
     if sheet is None:
         return []
+
     try:
         records = sheet.get_all_records()
     except Exception as e:
         logging.error(f"Sheet fetch error: {e}")
         return []
 
-    pending = []
-    for row in records:
-        # 完了フラグが立っていればスキップ
-        if row.get('完了') == 1:
-            continue
-
-        # 当日付がセットされている行をそのまま追加
-        if row.get('日付') == today_str:
-            pending.append(row)
-            continue
-
-        # 日付空文字かつ曜日・AMPM が整数なら比較
-        dow = str(row.get('曜日', '')).strip()
-        am = str(row.get('AMPM', '')).strip()
-        if not row.get('日付') and dow.isdigit() and am.isdigit():
-            if int(dow) == weekday and int(am) == ampm:
-                pending.append(row)
-
-    return pending
+    # 完了フラグが 0 の行だけ返す
+    return [ row for row in records if row.get('完了') != 1 ]
 
 # ── 投稿後の完了フラグ更新 ───────────────────
 def mark_as_done(sheet, urls):
