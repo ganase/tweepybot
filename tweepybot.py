@@ -10,7 +10,7 @@ import logging
 import sys
 import traceback
 
-# ── ロギング ─────────────────────────
+# ── ロギング設定 ─────────────────────────
 logging.basicConfig(
     filename='tweetbot.log',
     level=logging.DEBUG,
@@ -18,7 +18,7 @@ logging.basicConfig(
 )
 logging.info("Logging configured")
 
-# ── Google Sheets 認証 ────────────────
+# ── Google Sheets 認証準備 ────────────────────
 scope = [
     "https://spreadsheets.google.com/feeds",
     "https://www.googleapis.com/auth/drive"
@@ -38,9 +38,9 @@ try:
     sheet = spreadsheet.sheet1
 except Exception as e:
     logging.error(f"Unable to open spreadsheet: {e}")
-    sheet = None  # 後で失敗判定に使う
+    sheet = None
 
-# ── Twitter 認証 ──────────────────────
+# ── Twitter 認証 ─────────────────────────────
 def load_twitter_keys(path='twitter_key.json'):
     with open(path, encoding='utf-8') as f:
         return json.load(f)
@@ -54,7 +54,7 @@ twitter_client = tweepy.Client(
     access_token_secret=k['ACCESS_SECRET']
 )
 
-# ── ユーティリティ ───────────────────
+# ── ツイート用ユーティリティ ───────────────────
 def tweet(text: str):
     try:
         resp = twitter_client.create_tweet(text=text)
@@ -65,6 +65,7 @@ def tweet(text: str):
         logging.error(f"Tweet failed: {e}")
         return None
 
+# ── イベント取得関数（空文字チェック対応版） ─────────
 def get_pending(sheet, today_str, weekday, ampm):
     if sheet is None:
         return []
@@ -76,17 +77,25 @@ def get_pending(sheet, today_str, weekday, ampm):
 
     pending = []
     for row in records:
-        try:
-            if row['完了'] != 1 and (
-                (row['日付'] == today_str) or
-                (not row['日付'] and int(row['曜日']) == weekday and int(row['AMPM']) == ampm)
-            ):
+        # 完了フラグが立っていればスキップ
+        if row.get('完了') == 1:
+            continue
+
+        # 当日付がセットされている行をそのまま追加
+        if row.get('日付') == today_str:
+            pending.append(row)
+            continue
+
+        # 日付空文字かつ曜日・AMPM が整数なら比較
+        dow = str(row.get('曜日', '')).strip()
+        am = str(row.get('AMPM', '')).strip()
+        if not row.get('日付') and dow.isdigit() and am.isdigit():
+            if int(dow) == weekday and int(am) == ampm:
                 pending.append(row)
-        except KeyError:
-            logging.error("Spreadsheet headers mismatch")
-            return []
+
     return pending
 
+# ── 投稿後の完了フラグ更新 ───────────────────
 def mark_as_done(sheet, urls):
     if sheet is None or not urls:
         return
@@ -94,35 +103,37 @@ def mark_as_done(sheet, urls):
         for url in urls:
             cell = sheet.find(url)
             if cell:
+                # URL の右隣（完了列）に 1 を書き込む
                 sheet.update_cell(cell.row, cell.col + 1, 1)
     except Exception as e:
         logging.error(f"Update sheet error: {e}")
 
-# ── メイン処理 ────────────────────────
+# ── メイン処理 ─────────────────────────────
 def main():
     today = datetime.datetime.today()
     today_str = today.strftime('%Y/%m/%d')
-    weekday   = today.weekday()
-    ampm      = 0 if today.hour < 12 else 1
+    weekday = today.weekday()
+    ampm = 0 if today.hour < 12 else 1
 
     pending = get_pending(sheet, today_str, weekday, ampm)
 
-    # スクレイピング or シート取得失敗時
+    # 取得レコードがゼロ → 失敗として通知
     if not pending:
         logging.warning("No info fetched; sending failure tweet.")
-        tweet("こんにちは！お元気ですか？")
+        tweet("Failed to get information")
         return
 
     tweeted = []
     for row in pending:
-        url = row['URL']
-        comment = row['コメントjp']
-        if tweet(f"{comment} {url}"):
+        url = row.get('URL', '').strip()
+        comment = row.get('コメントjp', '').strip()
+        text = f"{comment} {url}".strip()
+        if text and tweet(text):
             tweeted.append(url)
 
     mark_as_done(sheet, tweeted)
 
-# ── エントリポイント ──────────────────
+# ── エントリポイント ─────────────────────────
 if __name__ == "__main__":
     try:
         main()
