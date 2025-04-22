@@ -4,7 +4,8 @@ on:
   schedule:
     # 0:00 UTC（JST 0:00）実行。23:00 UTC (JST 8:00)
     # JST 15:00 にしたい場合は 0 6 * * * に変更
-    - cron: "0 0 * * *"
+    # JST 08:30 にしたい場合は 30 23 * * * に変更
+    - cron: "30 23 * * *"
   workflow_dispatch:
 
 jobs:
