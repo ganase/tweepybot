@@ -124,5 +124,5 @@ if __name__ == "__main__":
     except Exception as e:
         logging.error(f"Unhandled exception: {e}")
         traceback.print_exc()
-        tweet("Failed to get information")
+        tweet("こんにちはだドン！")
         sys.exit(1)
