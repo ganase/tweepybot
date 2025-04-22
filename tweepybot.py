@@ -6,8 +6,6 @@ import pandas as pd
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 import tweepy
-import datetime
-import json
 import logging
 import sys
 import traceback
@@ -20,12 +18,15 @@ logging.basicConfig(
 )
 logging.info("Logging configured")
 
-# ── Twitter 認証 ─────────────────────────────
+# ── Twitter 認証準備 ─────────────────────────
 def load_twitter_keys(path='twitter_key.json'):
     with open(path, encoding='utf-8') as f:
         return json.load(f)
 
-k = load_twitter_keys()
+# JSON モジュールをインポート
+import json
+
+k = load_twitter_keys('twitter_key.json')
 twitter_client = tweepy.Client(
     bearer_token=k['BEARER_TOKEN'],
     consumer_key=k['CONSUMER_KEY'],
@@ -36,26 +37,26 @@ twitter_client = tweepy.Client(
 
 def tweet(text: str):
     try:
-        resp = twitter_client.create_tweet(text=text)
+        twitter_client.create_tweet(text=text)
         logging.info(f"Tweeted: {text}")
         return True
     except Exception as e:
         logging.error(f"Tweet failed: {e}")
         return False
 
-# ── Google Sheets 認証準備 ────────────────────
+# ── Google Sheets 認証 ─────────────────────────
 scope = [
     "https://spreadsheets.google.com/feeds",
     "https://www.googleapis.com/auth/drive"
 ]
-creds = ServiceAccountCredentials.from_json_keyfile_name(
+creds  = ServiceAccountCredentials.from_json_keyfile_name(
     'credentials.json', scope
 )
 client = gspread.authorize(creds)
 
 SPREADSHEET_URL = (
-    'https://docs.google.com/spreadsheets/d/'
-    '1RAZwuhJkpkca4QaVLVO9fzW68TKqLTxIhSfhrGR1Jjw/edit'
+    "https://docs.google.com/spreadsheets/d/"
+    "1RAZwuhJkpkca4QaVLVO9fzW68TKqLTxIhSfhrGR1Jjw/edit"
 )
 try:
     spreadsheet = client.open_by_url(SPREADSHEET_URL)
@@ -64,7 +65,7 @@ except Exception as e:
     logging.error(f"Unable to open spreadsheet: {e}")
     sheet = None
 
-# ── 投稿対象取得 ────────────────────────────
+# ── 未完了レコード取得 ─────────────────────────
 def get_pending(sheet):
     if sheet is None:
         return []
@@ -73,7 +74,6 @@ def get_pending(sheet):
     except Exception as e:
         logging.error(f"Sheet fetch error: {e}")
         return []
-    # 完了フラグが 0 の行
     return [row for row in records if row.get('完了') != 1]
 
 # ── 完了フラグ更新 ─────────────────────────
@@ -90,15 +90,18 @@ def mark_as_done(sheet, urls):
 
 # ── メイン処理 ─────────────────────────────
 def main():
-    # ① スクレイピング結果 CSV が空なら挨拶して終了
-    if os.path.exists('event_details.csv'):
-        df = pd.read_csv('event_details.csv')
-        if df.empty:
-            logging.warning("No events scraped; sending greeting tweet.")
-            tweet("こんにちは！")
-            return
+    # 1) new_rows_count.txt を読み込んで“新規ゼロ”をチェック
+    try:
+        cnt = int(open('new_rows_count.txt', encoding='utf-8').read().strip())
+    except Exception:
+        cnt = -1
 
-    # ② それ以外は従来の pending → ツイート処理
+    if cnt == 0:
+        logging.warning("No new rows; sending greeting tweet.")
+        tweet("こんにちは！")
+        return
+
+    # 2) それ以外は pending を取得して通常ツイート
     pending = get_pending(sheet)
     if not pending:
         logging.warning("No pending events; sending greeting tweet.")
@@ -107,20 +110,21 @@ def main():
 
     tweeted = []
     for row in pending:
-        url = row.get('URL', '').strip()
-        comment = row.get('コメントjp', '').strip()
-        text = f"{comment} {url}".strip()
+        url     = row.get('URL', '').strip()
+        comment = row.get('コメント', '').strip()
+        text    = f"{comment} {url}".strip()
         if text and tweet(text):
             tweeted.append(url)
 
+    # 3) フラグ更新
     mark_as_done(sheet, tweeted)
 
-# ── エントリポイント ───────────────────────
+# ── エントリポイント ─────────────────────────
 if __name__ == "__main__":
     try:
         main()
     except Exception as e:
         logging.error(f"Unhandled exception: {e}")
         traceback.print_exc()
-        tweet("本日はお知らせはないドン！ No new upcoming event today!")
+        tweet("こんにちは！")
         sys.exit(1)
