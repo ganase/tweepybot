@@ -65,7 +65,7 @@ def tweet(text: str):
         logging.error(f"Tweet failed: {e}")
         return None
 
-# ── イベント取得関数（空文字チェック対応版） ─────────
+# ── イベント取得関数 ─────────────────────────
 def get_pending(sheet, today_str, weekday, ampm):
     if sheet is None:
         return []
@@ -87,7 +87,6 @@ def mark_as_done(sheet, urls):
         for url in urls:
             cell = sheet.find(url)
             if cell:
-                # URL の右隣（完了列）に 1 を書き込む
                 sheet.update_cell(cell.row, cell.col + 1, 1)
     except Exception as e:
         logging.error(f"Update sheet error: {e}")
@@ -101,10 +100,10 @@ def main():
 
     pending = get_pending(sheet, today_str, weekday, ampm)
 
-    # 取得レコードがゼロ → 失敗として通知
+    # 取得レコードがゼロ → 挨拶ツイート
     if not pending:
-        logging.warning("No info fetched; sending failure tweet.")
-        tweet("Failed to get information")
+        logging.warning("No info fetched; sending greeting tweet.")
+        tweet("こんにちは！")
         return
 
     tweeted = []
@@ -124,5 +123,5 @@ if __name__ == "__main__":
     except Exception as e:
         logging.error(f"Unhandled exception: {e}")
         traceback.print_exc()
-        tweet("こんにちはだドン！")
+        tweet("こんにちはドン！")
         sys.exit(1)
