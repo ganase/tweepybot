@@ -126,5 +126,5 @@ if __name__ == "__main__":
     except Exception as e:
         logging.error(f"Unhandled exception: {e}")
         traceback.print_exc()
-        tweet("こんにちは！")
+        tweet("本日はお知らせはないドン！次のサイトをチェックドン！ https://usergroups.tableau.com/events/#/list")
         sys.exit(1)
