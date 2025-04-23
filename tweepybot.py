@@ -7,6 +7,7 @@ import sys
 import traceback
 import json
 import datetime
+
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 import tweepy
@@ -27,19 +28,11 @@ scope = [
 creds = ServiceAccountCredentials.from_json_keyfile_name('credentials.json', scope)
 client = gspread.authorize(creds)
 
-# 環境変数からシート URL と GID を取得
+# 環境変数からシート URL (必要なら GID) を取得
 SPREADSHEET_URL = os.environ.get("SPREADSHEET_URL", "")
-TARGET_GID      = int(os.environ.get("GID", "803084007"))
-
-# シートタブを取得（gid 優先、なければ先頭シート）
+# (シングルタブなら GID は不要。複数タブがあれば追加変数 GID を渡してください）
 spreadsheet = client.open_by_url(SPREADSHEET_URL)
-sheet = None
-for ws in spreadsheet.worksheets():
-    if ws.id == TARGET_GID:
-        sheet = ws
-        break
-if sheet is None:
-    sheet = spreadsheet.sheet1
+sheet = spreadsheet.sheet1
 
 # ── Twitter 認証 ──────────────────────────
 def load_twitter_keys(path='twitter_key.json'):
@@ -58,7 +51,8 @@ twitter_client = tweepy.Client(
 # ── 未完了URL取得 ──────────────────────────
 def get_pending_urls(sheet):
     """
-    完了フラグが0の行をすべて返す
+    シート上のレコードをすべて取得し、
+    \"完了\" 列が 0 の行を返す
     """
     try:
         records = sheet.get_all_records()
@@ -91,11 +85,11 @@ def mark_as_done(sheet, urls):
 
 # ── メイン処理 ─────────────────────────────
 def main():
-    pending_urls = get_pending_urls(sheet)
-    logging.info(f"Pending URLs: {pending_urls}")
+    pending = get_pending_urls(sheet)
+    logging.info(f"Pending URLs: {pending}")
 
     # 対象なし → フォールバックツイート
-    if not pending_urls:
+    if not pending:
         logging.info("No pending URLs; sending fallback tweet.")
         tweet_url(
             "https://usergroups.tableau.com/events/#/list",
@@ -104,7 +98,7 @@ def main():
         return
 
     tweeted = []
-    for row in pending_urls:
+    for row in pending:
         url     = row.get('URL', '').strip()
         comment = row.get('コメントjp', row.get('コメント', '')).strip()
         if url and tweet_url(url, comment):
