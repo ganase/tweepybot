@@ -6,10 +6,10 @@ import logging
 import sys
 import traceback
 import json
+import datetime
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 import tweepy
-import datetime
 
 # ── ロギング設定 ─────────────────────────
 logging.basicConfig(
@@ -17,7 +17,7 @@ logging.basicConfig(
     level=logging.DEBUG,
     format='%(asctime)s - %(levelname)s - %(message)s'
 )
-logging.info("Logging is configured correctly.")
+logging.info("Logging configured")
 
 # ── Google Sheets 認証 ────────────────────
 scope = [
@@ -29,9 +29,9 @@ client = gspread.authorize(creds)
 
 # 環境変数からシート URL と GID を取得
 SPREADSHEET_URL = os.environ.get("SPREADSHEET_URL", "")
-TARGET_GID = int(os.environ.get("GID", "803084007"))
+TARGET_GID      = int(os.environ.get("GID", "803084007"))
 
-# スプレッドシートとシートタブを選択
+# シートタブを取得（gid 優先、なければ先頭シート）
 spreadsheet = client.open_by_url(SPREADSHEET_URL)
 sheet = None
 for ws in spreadsheet.worksheets():
@@ -46,7 +46,7 @@ def load_twitter_keys(path='twitter_key.json'):
     with open(path, encoding='utf-8') as f:
         return json.load(f)
 
-twitter_keys = load_twitter_keys('twitter_key.json')
+twitter_keys = load_twitter_keys()
 twitter_client = tweepy.Client(
     bearer_token=twitter_keys['BEARER_TOKEN'],
     consumer_key=twitter_keys['CONSUMER_KEY'],
@@ -56,25 +56,18 @@ twitter_client = tweepy.Client(
 )
 
 # ── 未完了URL取得 ──────────────────────────
-def get_pending_urls(sheet, current_date, current_day, ampm):
-    pending = []
+def get_pending_urls(sheet):
+    """
+    完了フラグが0の行をすべて返す
+    """
     try:
         records = sheet.get_all_records()
-        for row in records:
-            if row.get('完了') != 1 and (
-                (row.get('日付') == current_date) or
-                (not row.get('日付') 
-                 and str(row.get('曜日')).isdigit() 
-                 and str(row.get('AMPM')).isdigit()
-                 and int(row['曜日']) == current_day 
-                 and int(row['AMPM']) == ampm)
-            ):
-                pending.append(row)
+        return [row for row in records if row.get('完了') != 1]
     except Exception as e:
         logging.error(f"Error loading pending URLs: {e}")
-    return pending
+        return []
 
-# ── URLをツイート ─────────────────────────
+# ── ツイートユーティリティ ────────────────────
 def tweet_url(url, comment):
     text = f"{comment} {url}".strip()
     try:
@@ -98,17 +91,12 @@ def mark_as_done(sheet, urls):
 
 # ── メイン処理 ─────────────────────────────
 def main():
-    today = datetime.datetime.now()
-    current_date = today.strftime('%Y/%m/%d')
-    current_day  = today.weekday()
-    ampm         = 0 if today.hour < 12 else 1
-
-    pending_urls = get_pending_urls(sheet, current_date, current_day, ampm)
+    pending_urls = get_pending_urls(sheet)
     logging.info(f"Pending URLs: {pending_urls}")
 
     # 対象なし → フォールバックツイート
     if not pending_urls:
-        logging.info("No pending URLs; sending default notification tweet.")
+        logging.info("No pending URLs; sending fallback tweet.")
         tweet_url(
             "https://usergroups.tableau.com/events/#/list",
             "本日はお知らせはないドン！次のサイトをチェックドン！"
