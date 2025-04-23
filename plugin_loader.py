@@ -8,8 +8,7 @@ import pandas as pd
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 
-# ── 1) プラグインのロード ─────────────────────────
-# 環境変数 CLIENT で "cl0001" / "cl0002" / ... を指定
+# ── 1) プラグインをロード ─────────────────────────────────
 CLIENT = os.environ.get("CLIENT", "cl0001")
 module_name = f"plugins.{CLIENT}"
 try:
@@ -20,21 +19,21 @@ except ImportError:
     print(f"[WARN] Plugin not found: {module_name}")
     event_details = []
 
-# ── 2) CSV に書き出し ───────────────────────────────
+# ── 2) CSV に書き出し ─────────────────────────────────────
 csv_file = "event_details.csv"
-columns  = ["URL", "完了", "コメント", "曜日", "AMPM", "日付", "date"]
+columns  = ["URL", "完了", "コメントjp", "曜日", "AMPM", "日付", "date"]
 with open(csv_file, "w", newline="", encoding="utf-8") as f:
     writer = csv.DictWriter(f, fieldnames=columns)
     writer.writeheader()
     writer.writerows(event_details)
 print(f"[INFO] CSV file '{csv_file}' has been created.")
 
-# ── 3) new_rows_count.txt に件数を記録 ─────────────────
+# ── 3) new_rows_count.txt に件数を記録 ─────────────────────────
 with open("new_rows_count.txt", "w", encoding="utf-8") as f:
     f.write(str(len(event_details)))
 print(f"[INFO] new_rows_count.txt written ({len(event_details)})")
 
-# ── 4) Google Sheets 書き込み部 ───────────────────────
+# ── 4) Google Sheets 書き込み部 ─────────────────────────────
 # 認証
 scope = [
     "https://spreadsheets.google.com/feeds",
@@ -44,10 +43,10 @@ creds  = ServiceAccountCredentials.from_json_keyfile_name("credentials.json", sc
 gclient = gspread.authorize(creds)
 
 # 環境変数で渡されたシート URL
-SPREADSHEET_URL = os.environ["SPREADSHEET_URL"]
+SPREADSHEET_URL = os.environ.get("SPREADSHEET_URL", "")
 spreadsheet = gclient.open_by_url(SPREADSHEET_URL)
 
-# gid 指定なしなら先頭シートを使う
+# 先頭シートを使用
 sheet = spreadsheet.sheet1
 
 # 既存の URL を取得
