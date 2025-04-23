@@ -14,11 +14,9 @@ jobs:
         client: [cl0001, cl0002, cl0003]
 
     env:
-      # 共通
       SERVICE_ACCOUNT_JSON: ${{ secrets.SERVICE_ACCOUNT_JSON }}
       CLIENT:               ${{ matrix.client }}
 
-      # クライアントごとに secrets を切り替え
       SPREADSHEET_URL:    ${{ matrix.client == 'cl0001' && secrets.CLIENT0001_SHEET_URL    || matrix.client == 'cl0002' && secrets.CLIENT0002_SHEET_URL    || matrix.client == 'cl0003' && secrets.CLIENT0003_SHEET_URL    || '' }}
       EVENT_URLS:         ${{ matrix.client == 'cl0001' && secrets.CLIENT0001_EVENT_URLS      || matrix.client == 'cl0002' && secrets.CLIENT0002_EVENT_URLS      || matrix.client == 'cl0003' && secrets.CLIENT0003_EVENT_URLS      || '' }}
 
@@ -57,15 +55,7 @@ jobs:
 
       - name: Write Twitter credentials
         run: |
-          cat > twitter_key.json <<EOF
-          {
-            "BEARER_TOKEN":    "${TW_BEARER_TOKEN}",
-            "CONSUMER_KEY":    "${TW_CONSUMER_KEY}",
-            "CONSUMER_SECRET": "${TW_CONSUMER_SECRET}",
-            "ACCESS_TOKEN":    "${TW_ACCESS_TOKEN}",
-            "ACCESS_SECRET":   "${TW_ACCESS_SECRET}"
-          }
-EOF
+          echo "{\"BEARER_TOKEN\":\"$TW_BEARER_TOKEN\",\"CONSUMER_KEY\":\"$TW_CONSUMER_KEY\",\"CONSUMER_SECRET\":\"$TW_CONSUMER_SECRET\",\"ACCESS_TOKEN\":\"$TW_ACCESS_TOKEN\",\"ACCESS_SECRET\":\"$TW_ACCESS_SECRET\"}" > twitter_key.json
 
       - name: Run Plugin Loader
         if: env.SPREADSHEET_URL != ''
