@@ -1,29 +1,60 @@
-name: Tweepy Bot Workflow
+name: Tweepy Bot Multi-Client
 
 on:
   schedule:
-    # 0:00 UTC（JST 0:00）実行。23:00 UTC (JST 8:00)
-    # JST 15:00 にしたい場合は 0 6 * * * に変更
-    # JST 08:30 にしたい場合は 30 23 * * * に変更
-    - cron: "30 23 * * *"
-  workflow_dispatch:
+    - cron: "30 23 * * *"    # 毎日 23:30 UTC → 翌日 08:30 JST
+  workflow_dispatch:        # 手動トリガーも残す
 
 jobs:
-  run-tweepy-bot:
+  run-bot:
     runs-on: ubuntu-latest
 
+    strategy:
+      matrix:
+        include:
+          - client: cl0001
+            SPREADSHEET_URL:    ${{ secrets.CLIENT0001_SHEET_URL }}
+            EVENT_URLS:         ${{ secrets.CLIENT0001_EVENT_URLS }}
+            TW_BEARER_TOKEN:    ${{ secrets.CLIENT0001_TW_BEARER_TOKEN }}
+            TW_CONSUMER_KEY:    ${{ secrets.CLIENT0001_TW_CONSUMER_KEY }}
+            TW_CONSUMER_SECRET: ${{ secrets.CLIENT0001_TW_CONSUMER_SECRET }}
+            TW_ACCESS_TOKEN:    ${{ secrets.CLIENT0001_TW_ACCESS_TOKEN }}
+            TW_ACCESS_SECRET:   ${{ secrets.CLIENT0001_TW_ACCESS_SECRET }}
+          - client: cl0002
+            SPREADSHEET_URL:    ""
+            EVENT_URLS:         ""
+            TW_BEARER_TOKEN:    ""
+            TW_CONSUMER_KEY:    ""
+            TW_CONSUMER_SECRET: ""
+            TW_ACCESS_TOKEN:    ""
+            TW_ACCESS_SECRET:   ""
+          - client: cl0003
+            SPREADSHEET_URL:    ""
+            EVENT_URLS:         ""
+            TW_BEARER_TOKEN:    ""
+            TW_CONSUMER_KEY:    ""
+            TW_CONSUMER_SECRET: ""
+            TW_ACCESS_TOKEN:    ""
+            TW_ACCESS_SECRET:   ""
+
+    env:
+      SERVICE_ACCOUNT_JSON: ${{ secrets.SERVICE_ACCOUNT_JSON }}
+      CLIENT:               ${{ matrix.client }}
+      SPREADSHEET_URL:      ${{ matrix.SPREADSHEET_URL }}
+      EVENT_URLS:           ${{ matrix.EVENT_URLS }}
+      TW_BEARER_TOKEN:      ${{ matrix.TW_BEARER_TOKEN }}
+      TW_CONSUMER_KEY:      ${{ matrix.TW_CONSUMER_KEY }}
+      TW_CONSUMER_SECRET:   ${{ matrix.TW_CONSUMER_SECRET }}
+      TW_ACCESS_TOKEN:      ${{ matrix.TW_ACCESS_TOKEN }}
+      TW_ACCESS_SECRET:     ${{ matrix.TW_ACCESS_SECRET }}
+
     steps:
-      # 1) リポジトリ取得
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 2) Google 認証ファイル作成
-      - name: Write credentials.json
+      - name: Write Google credentials
         run: echo "$SERVICE_ACCOUNT_JSON" > credentials.json
-        env:
-          SERVICE_ACCOUNT_JSON: ${{ secrets.SERVICE_ACCOUNT_JSON }}
 
-      # 3) Chromium & Chromedriver
       - name: Install Chromium and Chromedriver
         run: |
           sudo apt-get update
@@ -34,36 +65,21 @@ jobs:
             sudo ln -sf /usr/bin/chromium-browser /usr/bin/google-chrome || true
           fi
 
-      # 4) Python
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
 
-      # 5) 依存ライブラリ
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      # 6) Twitter API キー
-      - name: Write twitter_key.json
-        run: |
-          cat > twitter_key.json <<'EOF'
-          {
-            "BEARER_TOKEN": "${{ secrets.TW_BEARER_TOKEN }}",
-            "CONSUMER_KEY": "${{ secrets.TW_CONSUMER_KEY }}",
-            "CONSUMER_SECRET": "${{ secrets.TW_CONSUMER_SECRET }}",
-            "ACCESS_TOKEN": "${{ secrets.TW_ACCESS_TOKEN }}",
-            "ACCESS_SECRET": "${{ secrets.TW_ACCESS_SECRET }}"
-          }
-          EOF
+      - name: Run Plugin Loader
+        if: env.SPREADSHEET_URL != ''
+        run: python plugin_loader.py
+        continue-on-error: true
 
-      # 7) スクレイピング
-      - name: Run Tweepy Bot (scraping)
-        run: python tweepybot_scraping_tuge.py
-        continue-on-error: true        # ← 失敗しても後続へ進む
-
-      # 8) 投稿
       - name: Run Tweepy Bot (main)
+        if: env.SPREADSHEET_URL != ''
         run: python tweepybot.py
