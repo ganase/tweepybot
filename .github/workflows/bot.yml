@@ -19,28 +19,14 @@ jobs:
       CLIENT:               ${{ matrix.client }}
 
       # クライアントごとに secrets を切り替え
-      SPREADSHEET_URL:    ${{ matrix.client == 'cl0001' && secrets.CLIENT0001_SHEET_URL ||
-                            matrix.client == 'cl0002' && secrets.CLIENT0002_SHEET_URL ||
-                            matrix.client == 'cl0003' && secrets.CLIENT0003_SHEET_URL || '' }}
-      EVENT_URLS:         ${{ matrix.client == 'cl0001' && secrets.CLIENT0001_EVENT_URLS ||
-                            matrix.client == 'cl0002' && secrets.CLIENT0002_EVENT_URLS ||
-                            matrix.client == 'cl0003' && secrets.CLIENT0003_EVENT_URLS || '' }}
+      SPREADSHEET_URL:    ${{ matrix.client == 'cl0001' && secrets.CLIENT0001_SHEET_URL    || matrix.client == 'cl0002' && secrets.CLIENT0002_SHEET_URL    || matrix.client == 'cl0003' && secrets.CLIENT0003_SHEET_URL    || '' }}
+      EVENT_URLS:         ${{ matrix.client == 'cl0001' && secrets.CLIENT0001_EVENT_URLS      || matrix.client == 'cl0002' && secrets.CLIENT0002_EVENT_URLS      || matrix.client == 'cl0003' && secrets.CLIENT0003_EVENT_URLS      || '' }}
 
-      TW_BEARER_TOKEN:    ${{ matrix.client == 'cl0001' && secrets.CLIENT0001_TW_BEARER_TOKEN    ||
-                            matrix.client == 'cl0002' && secrets.CLIENT0002_TW_BEARER_TOKEN    ||
-                            matrix.client == 'cl0003' && secrets.CLIENT0003_TW_BEARER_TOKEN    || '' }}
-      TW_CONSUMER_KEY:    ${{ matrix.client == 'cl0001' && secrets.CLIENT0001_TW_CONSUMER_KEY   ||
-                            matrix.client == 'cl0002' && secrets.CLIENT0002_TW_CONSUMER_KEY   ||
-                            matrix.client == 'cl0003' && secrets.CLIENT0003_TW_CONSUMER_KEY   || '' }}
-      TW_CONSUMER_SECRET: ${{ matrix.client == 'cl0001' && secrets.CLIENT0001_TW_CONSUMER_SECRET||
-                            matrix.client == 'cl0002' && secrets.CLIENT0002_TW_CONSUMER_SECRET||
-                            matrix.client == 'cl0003' && secrets.CLIENT0003_TW_CONSUMER_SECRET|| '' }}
-      TW_ACCESS_TOKEN:    ${{ matrix.client == 'cl0001' && secrets.CLIENT0001_TW_ACCESS_TOKEN   ||
-                            matrix.client == 'cl0002' && secrets.CLIENT0002_TW_ACCESS_TOKEN   ||
-                            matrix.client == 'cl0003' && secrets.CLIENT0003_TW_ACCESS_TOKEN   || '' }}
-      TW_ACCESS_SECRET:   ${{ matrix.client == 'cl0001' && secrets.CLIENT0001_TW_ACCESS_SECRET  ||
-                            matrix.client == 'cl0002' && secrets.CLIENT0002_TW_ACCESS_SECRET  ||
-                            matrix.client == 'cl0003' && secrets.CLIENT0003_TW_ACCESS_SECRET  || '' }}
+      TW_BEARER_TOKEN:    ${{ matrix.client == 'cl0001' && secrets.CLIENT0001_TW_BEARER_TOKEN    || matrix.client == 'cl0002' && secrets.CLIENT0002_TW_BEARER_TOKEN    || matrix.client == 'cl0003' && secrets.CLIENT0003_TW_BEARER_TOKEN    || '' }}
+      TW_CONSUMER_KEY:    ${{ matrix.client == 'cl0001' && secrets.CLIENT0001_TW_CONSUMER_KEY   || matrix.client == 'cl0002' && secrets.CLIENT0002_TW_CONSUMER_KEY   || matrix.client == 'cl0003' && secrets.CLIENT0003_TW_CONSUMER_KEY   || '' }}
+      TW_CONSUMER_SECRET: ${{ matrix.client == 'cl0001' && secrets.CLIENT0001_TW_CONSUMER_SECRET|| matrix.client == 'cl0002' && secrets.CLIENT0002_TW_CONSUMER_SECRET|| matrix.client == 'cl0003' && secrets.CLIENT0003_TW_CONSUMER_SECRET|| '' }}
+      TW_ACCESS_TOKEN:    ${{ matrix.client == 'cl0001' && secrets.CLIENT0001_TW_ACCESS_TOKEN   || matrix.client == 'cl0002' && secrets.CLIENT0002_TW_ACCESS_TOKEN   || matrix.client == 'cl0003' && secrets.CLIENT0003_TW_ACCESS_TOKEN   || '' }}
+      TW_ACCESS_SECRET:   ${{ matrix.client == 'cl0001' && secrets.CLIENT0001_TW_ACCESS_SECRET  || matrix.client == 'cl0002' && secrets.CLIENT0002_TW_ACCESS_SECRET  || matrix.client == 'cl0003' && secrets.CLIENT0003_TW_ACCESS_SECRET  || '' }}
 
     steps:
       - name: Checkout repository
@@ -71,7 +57,7 @@ jobs:
 
       - name: Write Twitter credentials
         run: |
-          cat > twitter_key.json << 'EOF'
+          cat > twitter_key.json <<EOF
           {
             "BEARER_TOKEN":    "${TW_BEARER_TOKEN}",
             "CONSUMER_KEY":    "${TW_CONSUMER_KEY}",
@@ -79,7 +65,7 @@ jobs:
             "ACCESS_TOKEN":    "${TW_ACCESS_TOKEN}",
             "ACCESS_SECRET":   "${TW_ACCESS_SECRET}"
           }
-          EOF
+EOF
 
       - name: Run Plugin Loader
         if: env.SPREADSHEET_URL != ''
