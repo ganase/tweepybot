@@ -71,7 +71,7 @@ jobs:
 
       - name: Write Twitter credentials
         run: |
-          cat > twitter_key.json << 'EOF'
+          cat > twitter_key.json <<EOF
           {
             "BEARER_TOKEN":    "${TW_BEARER_TOKEN}",
             "CONSUMER_KEY":    "${TW_CONSUMER_KEY}",
@@ -79,7 +79,7 @@ jobs:
             "ACCESS_TOKEN":    "${TW_ACCESS_TOKEN}",
             "ACCESS_SECRET":   "${TW_ACCESS_SECRET}"
           }
-          EOF
+EOF
 
       - name: Run Plugin Loader
         if: env.SPREADSHEET_URL != ''
