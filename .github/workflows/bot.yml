@@ -3,7 +3,7 @@ name: Tweepy Bot Multi-Client
 on:
   schedule:
     - cron: "30 23 * * *"    # 毎日 23:30 UTC → 翌日 08:30 JST
-  workflow_dispatch:        # 手動トリガーも残す
+  workflow_dispatch:
 
 jobs:
   run-bot:
@@ -14,41 +14,20 @@ jobs:
         client: [cl0001, cl0002, cl0003]
 
     env:
-      # 共通
       SERVICE_ACCOUNT_JSON: ${{ secrets.SERVICE_ACCOUNT_JSON }}
       CLIENT:               ${{ matrix.client }}
-
-      # クライアントごとに secrets を切り替え
-      SPREADSHEET_URL:    ${{ matrix.client == 'cl0001' && secrets.CLIENT0001_SHEET_URL ||
-                            matrix.client == 'cl0002' && secrets.CLIENT0002_SHEET_URL ||
-                            matrix.client == 'cl0003' && secrets.CLIENT0003_SHEET_URL || '' }}
-      EVENT_URLS:         ${{ matrix.client == 'cl0001' && secrets.CLIENT0001_EVENT_URLS ||
-                            matrix.client == 'cl0002' && secrets.CLIENT0002_EVENT_URLS ||
-                            matrix.client == 'cl0003' && secrets.CLIENT0003_EVENT_URLS || '' }}
-
-      TW_BEARER_TOKEN:    ${{ matrix.client == 'cl0001' && secrets.CLIENT0001_TW_BEARER_TOKEN    ||
-                            matrix.client == 'cl0002' && secrets.CLIENT0002_TW_BEARER_TOKEN    ||
-                            matrix.client == 'cl0003' && secrets.CLIENT0003_TW_BEARER_TOKEN    || '' }}
-      TW_CONSUMER_KEY:    ${{ matrix.client == 'cl0001' && secrets.CLIENT0001_TW_CONSUMER_KEY   ||
-                            matrix.client == 'cl0002' && secrets.CLIENT0002_TW_CONSUMER_KEY   ||
-                            matrix.client == 'cl0003' && secrets.CLIENT0003_TW_CONSUMER_KEY   || '' }}
-      TW_CONSUMER_SECRET: ${{ matrix.client == 'cl0001' && secrets.CLIENT0001_TW_CONSUMER_SECRET||
-                            matrix.client == 'cl0002' && secrets.CLIENT0002_TW_CONSUMER_SECRET||
-                            matrix.client == 'cl0003' && secrets.CLIENT0003_TW_CONSUMER_SECRET|| '' }}
-      TW_ACCESS_TOKEN:    ${{ matrix.client == 'cl0001' && secrets.CLIENT0001_TW_ACCESS_TOKEN   ||
-                            matrix.client == 'cl0002' && secrets.CLIENT0002_TW_ACCESS_TOKEN   ||
-                            matrix.client == 'cl0003' && secrets.CLIENT0003_TW_ACCESS_TOKEN   || '' }}
-      TW_ACCESS_SECRET:   ${{ matrix.client == 'cl0001' && secrets.CLIENT0001_TW_ACCESS_SECRET  ||
-                            matrix.client == 'cl0002' && secrets.CLIENT0002_TW_ACCESS_SECRET  ||
-                            matrix.client == 'cl0003' && secrets.CLIENT0003_TW_ACCESS_SECRET  || '' }}
+      SPREADSHEET_URL:      ${{ matrix.client == 'cl0001' && secrets.CLIENT0001_SHEET_URL || matrix.client == 'cl0002' && secrets.CLIENT0002_SHEET_URL || matrix.client == 'cl0003' && secrets.CLIENT0003_SHEET_URL || '' }}
+      EVENT_URLS:           ${{ matrix.client == 'cl0001' && secrets.CLIENT0001_EVENT_URLS || matrix.client == 'cl0002' && secrets.CLIENT0002_EVENT_URLS || matrix.client == 'cl0003' && secrets.CLIENT0003_EVENT_URLS || '' }}
+      TW_BEARER_TOKEN:      ${{ matrix.client == 'cl0001' && secrets.CLIENT0001_TW_BEARER_TOKEN || matrix.client == 'cl0002' && secrets.CLIENT0002_TW_BEARER_TOKEN || matrix.client == 'cl0003' && secrets.CLIENT0003_TW_BEARER_TOKEN || '' }}
+      TW_CONSUMER_KEY:      ${{ matrix.client == 'cl0001' && secrets.CLIENT0001_TW_CONSUMER_KEY   || matrix.client == 'cl0002' && secrets.CLIENT0002_TW_CONSUMER_KEY   || matrix.client == 'cl0003' && secrets.CLIENT0003_TW_CONSUMER_KEY   || '' }}
+      TW_CONSUMER_SECRET:   ${{ matrix.client == 'cl0001' && secrets.CLIENT0001_TW_CONSUMER_SECRET|| matrix.client == 'cl0002' && secrets.CLIENT0002_TW_CONSUMER_SECRET|| matrix.client == 'cl0003' && secrets.CLIENT0003_TW_CONSUMER_SECRET|| '' }}
+      TW_ACCESS_TOKEN:      ${{ matrix.client == 'cl0001' && secrets.CLIENT0001_TW_ACCESS_TOKEN   || matrix.client == 'cl0002' && secrets.CLIENT0002_TW_ACCESS_TOKEN   || matrix.client == 'cl0003' && secrets.CLIENT0003_TW_ACCESS_TOKEN   || '' }}
+      TW_ACCESS_SECRET:     ${{ matrix.client == 'cl0001' && secrets.CLIENT0001_TW_ACCESS_SECRET  || matrix.client == 'cl0002' && secrets.CLIENT0002_TW_ACCESS_SECRET  || matrix.client == 'cl0003' && secrets.CLIENT0003_TW_ACCESS_SECRET  || '' }}
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
+      - uses: actions/checkout@v4
       - name: Write Google credentials
         run: echo "$SERVICE_ACCOUNT_JSON" > credentials.json
-
       - name: Install Chromium and Chromedriver
         run: |
           sudo apt-get update
@@ -58,17 +37,13 @@ jobs:
           else
             sudo ln -sf /usr/bin/chromium-browser /usr/bin/google-chrome || true
           fi
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-
       - name: Write Twitter credentials
         run: |
           cat > twitter_key.json <<EOF
@@ -80,12 +55,10 @@ jobs:
             "ACCESS_SECRET":   "${TW_ACCESS_SECRET}"
           }
 EOF
-
       - name: Run Plugin Loader
         if: env.SPREADSHEET_URL != ''
         run: python plugin_loader.py
         continue-on-error: true
-
       - name: Run Tweepy Bot (main)
         if: env.SPREADSHEET_URL != ''
         run: python tweepybot.py
