@@ -29,16 +29,30 @@ with open(csv_file, "w", newline="", encoding="utf-8") as f:
 print(f"[INFO] CSV file '{csv_file}' has been created.")
 
 # ── 3) new_rows_count.txt に件数を記録 ─────────────────────────
-# 新規追加行数(new_rows)を記録するよう修正
-# まず、CSV を読み込み既存 URL をチェック
+# Google Sheets から既存 URL を取得して比較
 SPREADSHEET_URL = os.environ.get("SPREADSHEET_URL", "")
-# Google Sheets 接続用に認証だけ行い、一時的にシート情報を取得
-# ※ 詳細な書き込み処理は後述するため、ここでは既存 URLs 抽出のみ実施
-creds_scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
-creds = ServiceAccountCredentials.from_json_keyfile_name("credentials.json", creds_scope)
+# 対象シートの gid を環境変数で指定する場合は GID 環境変数を使用
+TARGET_GID = int(os.environ.get("GID", 803084007))
+
+# 認証設定
+scope = [
+    "https://spreadsheets.google.com/feeds",
+    "https://www.googleapis.com/auth/drive"
+]
+creds = ServiceAccountCredentials.from_json_keyfile_name("credentials.json", scope)
 gclient = gspread.authorize(creds)
+
+# シート選択（gid 優先、なければ先頭シート）
 spreadsheet = gclient.open_by_url(SPREADSHEET_URL)
-sheet = spreadsheet.sheet1
+sheet = None
+for ws in spreadsheet.worksheets():
+    if ws.id == TARGET_GID:
+        sheet = ws
+        break
+if sheet is None:
+    sheet = spreadsheet.sheet1
+
+# 既存 URL を取得
 existing = sheet.get_all_records()
 existing_urls = {row["URL"] for row in existing}
 
@@ -50,17 +64,15 @@ with open("new_rows_count.txt", "w", encoding="utf-8") as f:
 print(f"[INFO] new_rows_count.txt written ({len(new_rows)})")
 
 # ── 4) Google Sheets 書き込み部 ─────────────────────────────
-if SPREADSHEET_URL:
-    # 認証
-    creds = ServiceAccountCredentials.from_json_keyfile_name("credentials.json", creds_scope)
-    gclient = gspread.authorize(creds)
+if SPREADSHEET_URL and new_rows:
+    # 対象シート再取得
     spreadsheet = gclient.open_by_url(SPREADSHEET_URL)
-    sheet = spreadsheet.sheet1
-
-    if new_rows:
-        sheet.append_rows(new_rows)
-        print(f"[INFO] Google Sheets に {len(new_rows)} 行追加されました。")
-    else:
-        print("[INFO] Google Sheets への追加対象はありませんでした。")
+    # sheet は先に取得済み
+    if not sheet:
+        sheet = spreadsheet.sheet1
+    sheet.append_rows(new_rows)
+    print(f"[INFO] Google Sheets に {len(new_rows)} 行追加されました。")
+elif SPREADSHEET_URL:
+    print("[INFO] Google Sheets への追加対象はありませんでした。")
 else:
     print("[WARN] SPREADSHEET_URL が設定されていないため、Sheets 書き込みをスキップしました。")
