@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
+import os  # 追加
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 import tweepy
@@ -19,14 +20,20 @@ logging.basicConfig(
 logging.info("Logging is configured correctly.")
 
 # ── Google Sheets 認証 ────────────────────
-scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
+scope = [
+    "https://spreadsheets.google.com/feeds",
+    "https://www.googleapis.com/auth/drive"
+]
 creds = ServiceAccountCredentials.from_json_keyfile_name('credentials.json', scope)
 client = gspread.authorize(creds)
-spreadsheet_url = os.environ.get("SPREADSHEET_URL")  # matrix でセット済み
+
+# 環境変数からシートURLを取得
+spreadsheet_url = os.environ.get("SPREADSHEET_URL")
 spreadsheet = client.open_by_url(spreadsheet_url)
 sheet = spreadsheet.sheet1
 
 # ── Twitter 認証 ──────────────────────────
+
 def load_twitter_keys(json_path):
     with open(json_path, mode='r', encoding='utf-8') as f:
         return json.load(f)
@@ -41,21 +48,24 @@ twitter_client = tweepy.Client(
 )
 
 # ── 未完了URL取得 ──────────────────────────
+
 def get_pending_urls(sheet, current_date, current_day, ampm):
     pending = []
     try:
         records = sheet.get_all_records()
         for row in records:
-            if row['完了'] != 1 and (
-                (row['日付'] == current_date) or
-                (not row['日付'] and int(row['曜日']) == current_day and int(row['AMPM']) == ampm)
+            if row.get('完了') != 1 and (
+                (row.get('日付') == current_date) or
+                (not row.get('日付') and str(row.get('曜日')).isdigit() and str(row.get('AMPM')).isdigit() and
+                 int(row['曜日']) == current_day and int(row['AMPM']) == ampm)
             ):
                 pending.append(row)
     except Exception as e:
         logging.error(f"Error loading pending URLs: {e}")
     return pending
 
-# ── URLをツイート ──────────────────────────
+# ── URLをツイート ─────────────────────────
+
 def tweet_url(url, comment):
     text = f"{comment} {url}".strip()
     try:
@@ -68,6 +78,7 @@ def tweet_url(url, comment):
         return None
 
 # ── 完了フラグ更新 ─────────────────────────
+
 def mark_as_done(sheet, urls):
     try:
         for u in urls:
@@ -87,7 +98,7 @@ def main():
     pending_urls = get_pending_urls(sheet, current_date, current_day, ampm)
     logging.info(f"Pending URLs: {pending_urls}")
 
-    # ←ここを追加：対象が一件もなければフォールバックツイート
+    # 対象なし→フォールバックツイート
     if not pending_urls:
         logging.info("No pending URLs; sending default tweet.")
         tweet_url(
@@ -98,9 +109,9 @@ def main():
 
     tweeted = []
     for row in pending_urls:
-        url     = row['URL'].strip()
+        url     = row.get('URL', '').strip()
         comment = row.get('コメントjp', row.get('コメント', '')).strip()
-        if tweet_url(url, comment):
+        if url and tweet_url(url, comment):
             tweeted.append(url)
 
     if tweeted:
