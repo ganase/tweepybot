@@ -2,7 +2,7 @@ name: Tweepy Bot Multi-Client
 
 on:
   schedule:
-    - cron: "30 23 * * *"    # 毎日 23:30 UTC → 翌日 08:30 JST
+    - cron: "45 22 * * *"    # 毎日 23:30 UTC → 翌日 08:30 JST
   workflow_dispatch:        # 手動トリガーも残す
 
 jobs:
