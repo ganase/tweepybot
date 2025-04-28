@@ -93,7 +93,7 @@ def main():
         logging.info("No pending URLs; sending fallback tweet.")
         tweet_url(
             "https://usergroups.tableau.com/events/#/list",
-            "本日はお知らせはないドン！次のサイトをチェックドン！"
+            "おはようドン！"
         )
         return
 
@@ -117,6 +117,6 @@ if __name__ == "__main__":
         traceback.print_exc()
         tweet_url(
             "https://usergroups.tableau.com/events/#/list",
-            "本日はお知らせはないドン！次のサイトをチェックドン！"
+            "こんにちはドン！"
         )
         sys.exit(1)
