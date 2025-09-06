@@ -1,0 +1,15 @@
+name: Keepalive
+on:
+  schedule:
+    - cron: "0 0 */14 * *"   # 14日に一度
+  workflow_dispatch:
+jobs:
+  keepalive-job:
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: gautamkrishnar/keepalive-workflow@v2
+        with:
+          time_elapsed: "45"   # 45日経過でAPI叩いて“活動”扱いに
